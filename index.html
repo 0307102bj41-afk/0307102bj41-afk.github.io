@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Portfolio — CleanCheck & STM32 RC Control</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #09090f;
+    --surface: #0f0f1a;
+    --surface2: #14141f;
+    --border: rgba(255,255,255,0.06);
+    --accent1: #4ff7c8;
+    --accent2: #7b6cff;
+    --accent3: #ff6c6c;
+    --text-primary: #f0eeff;
+    --text-secondary: #8a87a8;
+    --text-muted: #4a4768;
+    --tag-bg: rgba(79,247,200,0.08);
+    --tag-border: rgba(79,247,200,0.22);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text-primary);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── noise overlay ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+    opacity: 0.025;
+    pointer-events: none;
+    z-index: 999;
+  }
+
+  /* ── glow blobs ── */
+  .blob {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(120px);
+    pointer-events: none;
+    z-index: 0;
+    animation: drift 18s ease-in-out infinite alternate;
+  }
+  .blob-1 { width: 600px; height: 600px; background: rgba(79,247,200,0.06); top: -150px; left: -200px; }
+  .blob-2 { width: 500px; height: 500px; background: rgba(123,108,255,0.07); bottom: -100px; right: -150px; animation-delay: -9s; }
+  @keyframes drift { from { transform: translate(0,0) scale(1); } to { transform: translate(40px, 30px) scale(1.08); } }
+
+  /* ── nav ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 3rem;
+    background: rgba(9,9,15,0.7);
+    backdrop-filter: blur(18px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.1rem;
+    letter-spacing: 0.06em;
+    color: var(--accent1);
+  }
+  .nav-links { display: flex; gap: 2rem; }
+  .nav-links a {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+    text-decoration: none;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--accent1); }
+
+  /* ── hero ── */
+  .hero {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 8rem 3rem 4rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .hero-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    color: var(--accent1);
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .hero-eyebrow::before {
+    content: '';
+    display: block;
+    width: 32px; height: 1px;
+    background: var(--accent1);
+  }
+  .hero-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(3.5rem, 8vw, 7rem);
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    color: var(--text-primary);
+    margin-bottom: 2rem;
+  }
+  .hero-title span {
+    display: block;
+    -webkit-text-stroke: 1px rgba(255,255,255,0.15);
+    color: transparent;
+  }
+  .hero-desc {
+    font-size: 1.05rem;
+    color: var(--text-secondary);
+    line-height: 1.8;
+    max-width: 560px;
+    margin-bottom: 3rem;
+  }
+  .hero-tags { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+  .hero-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    padding: 0.35rem 0.9rem;
+    border: 1px solid var(--tag-border);
+    background: var(--tag-bg);
+    color: var(--accent1);
+    border-radius: 999px;
+    letter-spacing: 0.05em;
+  }
+
+  /* ── section container ── */
+  .section {
+    position: relative;
+    z-index: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 6rem 3rem;
+  }
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.22em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 0.6rem;
+  }
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+    color: var(--text-primary);
+    margin-bottom: 3.5rem;
+    letter-spacing: -0.02em;
+  }
+  .accent-line {
+    display: inline-block;
+    width: 3.5rem; height: 3px;
+    background: linear-gradient(90deg, var(--accent1), var(--accent2));
+    margin-right: 1rem;
+    vertical-align: middle;
+    border-radius: 2px;
+  }
+
+  /* divider */
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 0 3rem;
+  }
+
+  /* ── project card ── */
+  .project-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    transition: border-color 0.3s, transform 0.3s;
+    margin-bottom: 3rem;
+  }
+  .project-card:hover {
+    border-color: rgba(79,247,200,0.2);
+    transform: translateY(-3px);
+  }
+
+  /* card header */
+  .card-header {
+    padding: 2.5rem 2.5rem 2rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: flex-start;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+  .card-num {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 4.5rem;
+    line-height: 1;
+    -webkit-text-stroke: 1.5px var(--text-muted);
+    color: transparent;
+    flex-shrink: 0;
+    margin-top: -0.4rem;
+  }
+  .card-title-block { flex: 1; min-width: 240px; }
+  .card-subtitle {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--accent1);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+  .card-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: clamp(1.6rem, 3vw, 2.2rem);
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+    margin-bottom: 0.6rem;
+  }
+  .card-desc {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.75;
+    max-width: 560px;
+  }
+
+  /* card meta grid */
+  .card-meta {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .meta-item {
+    background: var(--surface);
+    padding: 1.1rem 1.6rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  .meta-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem;
+    color: var(--text-muted);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .meta-value {
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    font-weight: 400;
+  }
+
+  /* card body */
+  .card-body {
+    padding: 2.5rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+  @media (max-width: 768px) {
+    .card-body { grid-template-columns: 1fr; }
+    .card-header { flex-direction: column; gap: 1rem; }
+  }
+
+  /* sub-sections inside card */
+  .card-section-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--accent1);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .card-section-title::before {
+    content: '';
+    display: inline-block;
+    width: 14px; height: 2px;
+    background: var(--accent1);
+    border-radius: 2px;
+  }
+
+  /* feature list */
+  .feature-list { list-style: none; display: flex; flex-direction: column; gap: 0.65rem; }
+  .feature-list li {
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    padding-left: 1.1rem;
+    position: relative;
+  }
+  .feature-list li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--accent1);
+    font-size: 0.75rem;
+  }
+  .feature-list li strong { color: var(--text-primary); font-weight: 500; }
+
+  /* key point chips */
+  .chip-grid { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .chip {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    padding: 0.35rem 0.8rem;
+    border: 1px solid rgba(123,108,255,0.3);
+    background: rgba(123,108,255,0.07);
+    color: #a89eff;
+    border-radius: 6px;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+  .chip.green {
+    border-color: rgba(79,247,200,0.28);
+    background: rgba(79,247,200,0.07);
+    color: var(--accent1);
+  }
+  .chip.red {
+    border-color: rgba(255,108,108,0.28);
+    background: rgba(255,108,108,0.07);
+    color: var(--accent3);
+  }
+
+  /* arch flow */
+  .arch-flow {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.4rem 1.6rem;
+  }
+  .arch-step {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+    padding: 0.45rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .arch-step:last-child { border-bottom: none; }
+  .arch-step .dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--accent1);
+    flex-shrink: 0;
+    box-shadow: 0 0 6px var(--accent1);
+  }
+  .arch-step .arrow {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-left: 0.2rem;
+  }
+
+  /* ── performance section ── */
+  .perf-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    margin-bottom: 2rem;
+  }
+  @media (max-width: 640px) { .perf-grid { grid-template-columns: 1fr; } }
+  .perf-item {
+    background: var(--surface);
+    padding: 1.8rem 1.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .perf-item::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 60%; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent1), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .perf-item:hover::after { opacity: 1; }
+  .perf-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+  .perf-value {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 2rem;
+    color: var(--accent1);
+    margin-bottom: 0.2rem;
+  }
+  .perf-sub {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+
+  /* ── differentiator cards ── */
+  .diff-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.2rem;
+    margin-bottom: 2rem;
+  }
+  @media (max-width: 768px) { .diff-grid { grid-template-columns: 1fr; } }
+  .diff-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.6rem;
+    transition: border-color 0.3s, transform 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .diff-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent1), var(--accent2));
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .diff-card:hover { border-color: rgba(79,247,200,0.2); transform: translateY(-2px); }
+  .diff-card:hover::before { opacity: 1; }
+  .diff-icon {
+    font-size: 1.5rem;
+    margin-bottom: 0.8rem;
+  }
+  .diff-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+  }
+  .diff-body {
+    font-size: 0.83rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+  }
+
+  /* ── insight box ── */
+  .insight-box {
+    background: linear-gradient(135deg, rgba(79,247,200,0.05), rgba(123,108,255,0.05));
+    border: 1px solid rgba(79,247,200,0.15);
+    border-radius: 14px;
+    padding: 2rem 2.2rem;
+    margin-bottom: 1.2rem;
+  }
+  .insight-box p {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.8;
+  }
+  .insight-box strong { color: var(--accent1); font-weight: 500; }
+
+  /* ── quote band ── */
+  .quote-band {
+    position: relative;
+    z-index: 1;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 3.5rem 3rem;
+    text-align: center;
+    overflow: hidden;
+  }
+  .quote-band::before {
+    content: '❝';
+    position: absolute;
+    font-size: 16rem;
+    color: rgba(79,247,200,0.03);
+    top: -3rem; left: 1rem;
+    font-family: serif;
+    line-height: 1;
+    pointer-events: none;
+  }
+  .quote-text {
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: clamp(1.1rem, 2.5vw, 1.6rem);
+    color: var(--text-primary);
+    max-width: 800px;
+    margin: 0 auto 1rem;
+    line-height: 1.55;
+    letter-spacing: -0.01em;
+  }
+  .quote-author {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    letter-spacing: 0.12em;
+  }
+
+  /* ── STM32 specifics ── */
+  .stm-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+  @media (max-width: 768px) { .stm-grid { grid-template-columns: 1fr; } }
+
+  .skill-pill-grid { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .skill-pill {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.67rem;
+    padding: 0.28rem 0.7rem;
+    border: 1px solid rgba(255,108,108,0.25);
+    background: rgba(255,108,108,0.06);
+    color: #ff9f9f;
+    border-radius: 5px;
+    letter-spacing: 0.06em;
+  }
+
+  .trouble-list { list-style: none; display: flex; flex-direction: column; gap: 0.7rem; }
+  .trouble-list li {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    line-height: 1.65;
+    padding: 0.7rem 1rem 0.7rem 1.3rem;
+    border-left: 2px solid rgba(255,108,108,0.35);
+    background: rgba(255,108,108,0.03);
+    border-radius: 0 6px 6px 0;
+  }
+  .trouble-list li strong { color: var(--accent3); display: block; margin-bottom: 0.2rem; font-size: 0.78rem; font-family: 'DM Mono', monospace; letter-spacing: 0.08em; text-transform: uppercase; }
+
+  .realworld-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+  @media (max-width: 640px) { .realworld-grid { grid-template-columns: 1fr; } }
+  .rw-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.2rem 1.3rem;
+  }
+  .rw-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--accent2);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .rw-badge::before {
+    content: '';
+    display: inline-block;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent2);
+  }
+  .rw-body { font-size: 0.82rem; color: var(--text-secondary); line-height: 1.65; }
+
+  /* ── footer ── */
+  footer {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 3rem;
+    border-top: 1px solid var(--border);
+  }
+  .footer-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+    margin-bottom: 0.5rem;
+  }
+  .footer-sub {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    letter-spacing: 0.15em;
+  }
+
+  /* ── entry animations ── */
+  .fade-up {
+    opacity: 0;
+    transform: translateY(28px);
+    animation: fadeUp 0.7s ease forwards;
+  }
+  @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+  .delay-1 { animation-delay: 0.1s; }
+  .delay-2 { animation-delay: 0.22s; }
+  .delay-3 { animation-delay: 0.34s; }
+  .delay-4 { animation-delay: 0.46s; }
+  .delay-5 { animation-delay: 0.58s; }
+
+  /* scroll reveal */
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- ambient blobs -->
+<div class="blob blob-1"></div>
+<div class="blob blob-2"></div>
+
+<!-- nav -->
+<nav>
+  <div class="nav-logo">PORTFOLIO</div>
+  <div class="nav-links">
+    <a href="#project1">CleanCheck</a>
+    <a href="#project2">STM32 RC</a>
+  </div>
+</nav>
+
+<!-- hero -->
+<section class="hero">
+  <div class="hero-eyebrow fade-up">AI · Embedded · IoT</div>
+  <h1 class="hero-title fade-up delay-1">
+    PROJECT<br/>
+    <span>SHOWCASE</span>
+  </h1>
+  <p class="hero-desc fade-up delay-2">
+    딥러닝 기반 청결도 진단 시스템부터 레지스터 레벨 임베디드 제어까지,
+    AI와 하드웨어를 아우르는 프로젝트 포트폴리오입니다.
+  </p>
+  <div class="hero-tags fade-up delay-3">
+    <span class="hero-tag">CNN / YOLO / CLIP / SAM</span>
+    <span class="hero-tag">Grad-CAM XAI</span>
+    <span class="hero-tag">IoT · Raspberry Pi</span>
+    <span class="hero-tag">STM32 Embedded C</span>
+    <span class="hero-tag">Real-time Control</span>
+    <span class="hero-tag">2026 ICT 융합 공모전</span>
+  </div>
+</section>
+
+<!-- quote -->
+<div class="quote-band">
+  <p class="quote-text">
+    "기존의 주관적 청결 판단을, 일상에서 사용할 수 있는<br/>객관적 진단 경험으로 전환하고자 했다."
+  </p>
+  <p class="quote-author">— CleanCheck 프로젝트 팀 돼지우리</p>
+</div>
+
+<!-- ─────────────────────────── PROJECT 01 ─────────────────────────── -->
+<section class="section" id="project1">
+  <div class="reveal">
+    <p class="section-label">Project 01</p>
+    <h2 class="section-title"><span class="accent-line"></span>CleanCheck</h2>
+  </div>
+
+  <div class="project-card reveal">
+    <!-- header -->
+    <div class="card-header">
+      <div class="card-num">01</div>
+      <div class="card-title-block">
+        <div class="card-subtitle">Deep Learning · Computer Vision · IoT</div>
+        <h3 class="card-title">CleanCheck</h3>
+        <p class="card-desc">
+          딥러닝 기반 생활공간 청결도 자동 진단 및 모니터링 시스템.
+          스마트폰과 IoT 기기를 통해 누구나 일상 속 청결도를 정량적으로 측정하고
+          객관적인 점수와 시각적 피드백을 받을 수 있는 솔루션입니다.
+        </p>
+      </div>
+    </div>
+
+    <!-- meta -->
+    <div class="card-meta">
+      <div class="meta-item">
+        <span class="meta-label">유형</span>
+        <span class="meta-value">2026 ICT 융합 공모전</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">팀 구성</span>
+        <span class="meta-value">팀 돼지우리 (4인)</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">데이터셋</span>
+        <span class="meta-value">자체 구축 4,066장</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">핵심 기술</span>
+        <span class="meta-value">AI · CV · IoT</span>
+      </div>
+    </div>
+
+    <!-- body -->
+    <div class="card-body">
+      <!-- left: problem + arch -->
+      <div>
+        <div class="card-section-title">문제 정의</div>
+        <ul class="feature-list" style="margin-bottom: 2rem;">
+          <li><strong>1인 가구 증가</strong> — 주거 환경 관리 소홀의 사회적 문제 대두</li>
+          <li><strong>정신 건강 악순환</strong> — 어지러운 공간 → 스트레스 · 무기력 · 우울감</li>
+          <li><strong>전문가 의존 평가</strong> — ECCS 등 기존 도구는 일반인 자가 진단 불가</li>
+        </ul>
+
+        <div class="card-section-title">시스템 아키텍처</div>
+        <div class="arch-flow">
+          <div class="arch-step"><span class="dot"></span>입력 이미지 수집 (Web / IoT 홈캠)</div>
+          <div class="arch-step"><span class="dot"></span>CNN 분류 · YOLO 특징 추출 · CLIP 자연어</div>
+          <div class="arch-step"><span class="dot"></span>CNN 확신도 기반 동적 가중치 앙상블</div>
+          <div class="arch-step"><span class="dot"></span>청결 점수 산출 / SAM 시각 피드백</div>
+          <div class="arch-step"><span class="dot"></span>웹 서비스 표출 · IoT 부저 알림 연동</div>
+        </div>
+      </div>
+
+      <!-- right: features + stack -->
+      <div>
+        <div class="card-section-title">핵심 구현 기능</div>
+        <ul class="feature-list" style="margin-bottom: 2rem;">
+          <li><strong>0~100 청결 점수</strong> — Clean/Dirty 이진 분류 + 수치 정량화</li>
+          <li><strong>YOLO 12가지 특징 추출</strong> — 객체 확산도, 바닥 점유율 등</li>
+          <li><strong>Grad-CAM 히트맵</strong> — 오염 부위 시각적 근거 제시</li>
+          <li><strong>SAM 오버레이</strong> — 정리 필요 구역 정밀 마스킹</li>
+          <li><strong>Raspberry Pi 5 연동</strong> — 장시간 미정리 시 부저 알림</li>
+          <li><strong>Community 기능</strong> — 청결 점수 공유로 동기 부여</li>
+        </ul>
+
+        <div class="card-section-title">기술 스택</div>
+        <div class="chip-grid">
+          <span class="chip green">Keras ResNet50</span>
+          <span class="chip green">YOLOv8</span>
+          <span class="chip green">OpenAI CLIP</span>
+          <span class="chip green">Meta SAM</span>
+          <span class="chip">Grad-CAM</span>
+          <span class="chip">Dynamic Ensemble</span>
+          <span class="chip">Flask</span>
+          <span class="chip">Raspberry Pi 5</span>
+          <span class="chip red">5-Fold CV</span>
+          <span class="chip red">Grayscale 전처리</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- performance -->
+  <div class="reveal" style="margin-bottom: 2rem;">
+    <div class="card-section-title" style="margin-bottom: 1.5rem;">
+      <span style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.1rem;color:var(--text-primary);letter-spacing:-0.01em;">모델 성능 지표</span>
+    </div>
+    <div class="perf-grid">
+      <div class="perf-item">
+        <div class="perf-label">책상 모델 Accuracy</div>
+        <div class="perf-value">96.56%</div>
+        <div class="perf-sub">Desk Domain</div>
+      </div>
+      <div class="perf-item">
+        <div class="perf-label">책상 모델 F1 Score</div>
+        <div class="perf-value">0.9560</div>
+        <div class="perf-sub">Desk Domain</div>
+      </div>
+      <div class="perf-item">
+        <div class="perf-label">책상 ROC AUC</div>
+        <div class="perf-value">0.9971</div>
+        <div class="perf-sub">Desk Domain</div>
+      </div>
+      <div class="perf-item">
+        <div class="perf-label">방 모델 Accuracy</div>
+        <div class="perf-value">95.97%</div>
+        <div class="perf-sub">Room Domain</div>
+      </div>
+      <div class="perf-item">
+        <div class="perf-label">방 모델 F1 Score</div>
+        <div class="perf-value">0.9559</div>
+        <div class="perf-sub">Room Domain</div>
+      </div>
+      <div class="perf-item">
+        <div class="perf-label">방 모델 ROC AUC</div>
+        <div class="perf-value">0.9917</div>
+        <div class="perf-sub">Room Domain</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- differentiators -->
+  <div class="reveal" style="margin-bottom: 2rem;">
+    <div class="card-section-title" style="margin-bottom:1.2rem;">
+      <span style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.1rem;color:var(--text-primary);">핵심 차별점</span>
+    </div>
+    <div class="diff-grid">
+      <div class="diff-card">
+        <div class="diff-icon">⚡</div>
+        <div class="diff-title">동적 가중치 앙상블</div>
+        <div class="diff-body">CNN 예측 확신도에 따라 모델별 가중치를 실시간 조정해 단일 모델의 한계를 극복하고 분석 정밀도를 극대화했습니다.</div>
+      </div>
+      <div class="diff-card">
+        <div class="diff-icon">🔍</div>
+        <div class="diff-title">설명 가능한 AI (XAI)</div>
+        <div class="diff-body">Grad-CAM 히트맵과 SAM 오버레이를 통해 모델 판단 근거를 시각적으로 제시해 사용자 신뢰도를 확보했습니다.</div>
+      </div>
+      <div class="diff-card">
+        <div class="diff-icon">🏠</div>
+        <div class="diff-title">IoT 생활 밀착형 통합</div>
+        <div class="diff-body">소프트웨어 진단을 넘어 라즈베리파이 하드웨어와 결합, 즉각적인 청소 행동을 유도하는 실질적 솔루션을 구현했습니다.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- insights -->
+  <div class="reveal">
+    <div class="card-section-title" style="margin-bottom:1.2rem;">
+      <span style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.1rem;color:var(--text-primary);">프로젝트 인사이트 & 확장 가능성</span>
+    </div>
+    <div class="insight-box">
+      <p><strong>객관적 경험 설계</strong> — 주관적인 개인 공간 청결도를 데이터·알고리즘 기반 수치로 제공해 사용자의 자기주도적 생활 관리를 가능하게 했습니다.</p>
+    </div>
+    <div class="insight-box">
+      <p><strong>신뢰성 있는 시스템</strong> — 멀티모델 앙상블과 XAI 결합은 헬스케어·주거 관리 서비스에서 AI 판단을 사용자가 납득하도록 하는 핵심 요소임을 확인했습니다.</p>
+    </div>
+    <div class="insight-box">
+      <p><strong>서비스 확장성</strong> — 축적된 유저 데이터를 바탕으로 개인 맞춤형 청소 주기 제안 및 1인 가구 복지 서비스 연계로 발전 가능합니다.</p>
+    </div>
+  </div>
+</section>
+
+<hr class="divider" />
+
+<!-- ─────────────────────────── PROJECT 02 ─────────────────────────── -->
+<section class="section" id="project2">
+  <div class="reveal">
+    <p class="section-label">Project 02</p>
+    <h2 class="section-title"><span class="accent-line" style="background:linear-gradient(90deg,var(--accent3),var(--accent2));"></span>STM32 RC Control</h2>
+  </div>
+
+  <div class="project-card reveal">
+    <div class="card-header">
+      <div class="card-num" style="-webkit-text-stroke-color: var(--text-muted);">02</div>
+      <div class="card-title-block">
+        <div class="card-subtitle" style="color:var(--accent3);">Embedded C · STM32 · Real-time Control</div>
+        <h3 class="card-title">STM32 RC Control</h3>
+        <p class="card-desc">
+          조이스틱 입력, 블루투스 통신, LCD UI, PWM 모터 제어를 통합한 레지스터 기반 임베디드 시스템.
+          입력 수집·통신·출력·예외 처리를 하나의 시스템으로 연결해 실제 펌웨어 구조를 end-to-end로 이해하고 구현했습니다.
+        </p>
+      </div>
+    </div>
+
+    <div class="card-meta">
+      <div class="meta-item">
+        <span class="meta-label">유형</span>
+        <span class="meta-value">학습형 · 코드리뷰형</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">진행 방식</span>
+        <span class="meta-value">개인 프로젝트</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">중심 주제</span>
+        <span class="meta-value">Embedded C / STM32</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">구현 범위</span>
+        <span class="meta-value">Input · Comm · UI · Motor</span>
+      </div>
+    </div>
+
+    <div class="card-body">
+      <div>
+        <div class="card-section-title" style="color:var(--accent3);">핵심 구현 포인트</div>
+        <ul class="feature-list" style="margin-bottom:2rem;">
+          <li><strong>ADC 입력 처리</strong> — 2축 조이스틱을 12bit 값(0~4095)으로 변환</li>
+          <li><strong>Custom UART Packet</strong> — 방향·버튼·체크섬 기반 커스텀 제어 패킷 설계</li>
+          <li><strong>LCD UI</strong> — 1602 LCD + I2C 변환 모듈 상태 표시</li>
+          <li><strong>PWM 모터 제어</strong> — 좌우 독립 제어로 직진·회전·정지 구현</li>
+          <li><strong>Interrupt & Debounce</strong> — 버튼 채터링 억제 및 안정적 입력 처리</li>
+          <li><strong>State Machine Parser</strong> — 수신 패킷 단계별 파싱으로 통신 신뢰성 확보</li>
+        </ul>
+
+        <div class="card-section-title" style="color:var(--accent3);">기술 키워드</div>
+        <div class="skill-pill-grid">
+          <span class="skill-pill">STM32F411</span>
+          <span class="skill-pill">Cortex-M4</span>
+          <span class="skill-pill">Embedded C</span>
+          <span class="skill-pill">Register-level</span>
+          <span class="skill-pill">ADC</span>
+          <span class="skill-pill">UART / BT</span>
+          <span class="skill-pill">I2C LCD</span>
+          <span class="skill-pill">PWM Motor</span>
+          <span class="skill-pill">SysTick</span>
+          <span class="skill-pill">Timer</span>
+          <span class="skill-pill">Interrupt</span>
+        </div>
+      </div>
+
+      <div>
+        <div class="card-section-title" style="color:var(--accent3);">실무형 역량으로 해석</div>
+        <div class="realworld-grid" style="margin-bottom:2rem;">
+          <div class="rw-card">
+            <div class="rw-badge">Data In</div>
+            <div class="rw-body">샘플링 시간·클럭 분주를 고려한 아날로그 입력 안정적 수집 구조 이해</div>
+          </div>
+          <div class="rw-card">
+            <div class="rw-badge">Integrity</div>
+            <div class="rw-body">체크섬·상태 플래그·타임아웃으로 통신 무결성 및 예외 대응 설계</div>
+          </div>
+          <div class="rw-card">
+            <div class="rw-badge">Realtime</div>
+            <div class="rw-body">SysTick·Timer·Interrupt로 CPU 점유 최소화·주기적 동작 분리</div>
+          </div>
+          <div class="rw-card">
+            <div class="rw-badge">Modular</div>
+            <div class="rw-body">adc.c · uart.c · i2c.c · motor.c 기능별 모듈 분리 → 리뷰·유지보수 용이</div>
+          </div>
+        </div>
+
+        <div class="card-section-title" style="color:var(--accent3);">트러블슈팅 & 학습 성과</div>
+        <ul class="trouble-list">
+          <li><strong>ADC 쓰레기 값</strong>변환 완료 플래그 대기 후 읽기로 안정적 입력값 확보</li>
+          <li><strong>I2C 동기화</strong>LCD 초기화 시퀀스 조정으로 통신 안정성 개선</li>
+          <li><strong>UART 예외</strong>타임아웃·예외 핸들러 도입으로 무한 대기 방지</li>
+          <li><strong>문서화</strong>저수준 레지스터 제어를 설명 가능한 구조로 정리, 코드리뷰 포트폴리오 소재로 전환</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- footer -->
+<footer>
+  <div class="footer-logo">PORTFOLIO · 2026</div>
+  <div class="footer-sub">AI · Embedded · IoT — Built with intention</div>
+</footer>
+
+<script>
+  // scroll reveal
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.08 });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
