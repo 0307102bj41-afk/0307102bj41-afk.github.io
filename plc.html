@@ -1,0 +1,762 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>PLC와 Servo Motor를 활용한 MPS 기반 서보 정밀 위치 제어 및 소재 자동 분류 저장 시스템 구축 프로젝트</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+/* Override strong tags inside headings to maintain consistent weight */
+h1 strong,
+h2 strong,
+h3 strong {
+	font-weight: 600;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+
+	table.collection-content {
+		width: 100%;
+		table-layout: fixed;
+	}
+
+	table.collection-content th,
+	table.collection-content td {
+		overflow-wrap: anywhere;
+	}
+
+	table.collection-content td > .user,
+	table.collection-content td > time {
+		white-space: pre-wrap;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content-wrapper {
+	overflow-x: auto;
+}
+
+@media only print {
+	.collection-content-wrapper {
+		overflow-x: visible;
+	}
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	gap: 46px;
+}
+
+.column {
+	min-width: 0;
+	overflow: hidden;
+}
+
+.column > *:first-child {
+	margin-top: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+table {
+	border-collapse: collapse;
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol.numbered-list.numbered-list-digits-2 {
+	padding-inline-start: 2em;
+}
+
+ol.numbered-list.numbered-list-digits-3plus {
+	padding-inline-start: 2.4em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="3012a77e-92c7-802f-9a7b-e51cc91fa7aa" class="page sans"><header><h1 class="page-title" dir="auto">PLC와 Servo Motor를 활용한 MPS 기반 서보 정밀 위치 제어 및 소재 자동 분류 저장 시스템 구축 프로젝트</h1><p class="page-description" dir="auto"></p></header><div class="page-body"><div style="display:contents" dir="auto"><p id="3012a77e-92c7-8060-b6df-d299617e3f5b" class="">
+</p></div><div style="display:contents" dir="ltr"><figure id="3012a77e-92c7-8068-8bd9-c12994cd9040"><div class="source"><a href="PLC%EC%99%80%20Servo%20Motor%EB%A5%BC%20%ED%99%9C%EC%9A%A9%ED%95%9C%20MPS%20%EA%B8%B0%EB%B0%98%20%EC%84%9C%EB%B3%B4%20%EC%A0%95%EB%B0%80%20%EC%9C%84%EC%B9%98%20%EC%A0%9C%EC%96%B4%20%EB%B0%8F%20%EC%86%8C%EC%9E%AC%20%EC%9E%90%EB%8F%99%20%EB%B6%84/miniproject_finalcode.gxw">miniproject_finalcode.gxw</a></div></figure></div><div style="display:contents" dir="ltr"><figure id="3012a77e-92c7-80b9-a680-fe3e281b23f3"><div class="source"><a href="PLC%EC%99%80%20Servo%20Motor%EB%A5%BC%20%ED%99%9C%EC%9A%A9%ED%95%9C%20MPS%20%EA%B8%B0%EB%B0%98%20%EC%84%9C%EB%B3%B4%20%EC%A0%95%EB%B0%80%20%EC%9C%84%EC%B9%98%20%EC%A0%9C%EC%96%B4%20%EB%B0%8F%20%EC%86%8C%EC%9E%AC%20%EC%9E%90%EB%8F%99%20%EB%B6%84/miniproject_-_%EC%B5%9C%EC%A2%85.zip">miniproject - 최종.zip</a></div></figure></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-807f-a371-c1c913f8d855" class="">
+</p></div><div style="display:contents" dir="auto"><h1 id="3012a77e-92c7-80b0-8d4a-cff6f4f5f452" class="">개발환경</h1></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-8098-932f-e6a188a6c492" class="">하드웨어<br/>사용한 CPU 모델명 : Q03UDV<br/>베이스 유닛<br/>입출력, 특수 모듈</p></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-80e3-a304-e2ff0f1f4f18" class="">소프트웨어<br/>GX Works2<br/>GT Designer3 (GOT 2000)<br/>GT Simulator (GOT 2000)</p></div><div style="display:contents" dir="ltr"><figure id="3012a77e-92c7-8079-b1f7-e9695eb7923f" class="image"><a href="PLC%EC%99%80%20Servo%20Motor%EB%A5%BC%20%ED%99%9C%EC%9A%A9%ED%95%9C%20MPS%20%EA%B8%B0%EB%B0%98%20%EC%84%9C%EB%B3%B4%20%EC%A0%95%EB%B0%80%20%EC%9C%84%EC%B9%98%20%EC%A0%9C%EC%96%B4%20%EB%B0%8F%20%EC%86%8C%EC%9E%AC%20%EC%9E%90%EB%8F%99%20%EB%B6%84/PLC_%EC%8B%A4%EC%8A%B5%EC%9E%A5%EC%B9%98_%EC%9E%85%EC%B6%9C%EB%A0%A5_%ED%95%A0%EB%8B%B9%EB%82%B4%EC%97%AD.avif"><img style="width:709.9874877929688px" src="PLC%EC%99%80%20Servo%20Motor%EB%A5%BC%20%ED%99%9C%EC%9A%A9%ED%95%9C%20MPS%20%EA%B8%B0%EB%B0%98%20%EC%84%9C%EB%B3%B4%20%EC%A0%95%EB%B0%80%20%EC%9C%84%EC%B9%98%20%EC%A0%9C%EC%96%B4%20%EB%B0%8F%20%EC%86%8C%EC%9E%AC%20%EC%9E%90%EB%8F%99%20%EB%B6%84/PLC_%EC%8B%A4%EC%8A%B5%EC%9E%A5%EC%B9%98_%EC%9E%85%EC%B6%9C%EB%A0%A5_%ED%95%A0%EB%8B%B9%EB%82%B4%EC%97%AD.avif"/></a></figure></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-8092-863d-d76be2539121" class="">
+</p></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-8002-bc24-c80f5eaf36c3" class="">
+</p></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-80f9-8fcd-dda56725dd03" class="">메모리맵</p></div><div style="display:contents" dir="ltr"><figure id="3012a77e-92c7-80ce-b811-d96da335b9aa"><div class="source"><a href="PLC%EC%99%80%20Servo%20Motor%EB%A5%BC%20%ED%99%9C%EC%9A%A9%ED%95%9C%20MPS%20%EA%B8%B0%EB%B0%98%20%EC%84%9C%EB%B3%B4%20%EC%A0%95%EB%B0%80%20%EC%9C%84%EC%B9%98%20%EC%A0%9C%EC%96%B4%20%EB%B0%8F%20%EC%86%8C%EC%9E%AC%20%EC%9E%90%EB%8F%99%20%EB%B6%84/Mini_Project_memory_map.xlsx">Mini Project memory map.xlsx</a></div></figure></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-8065-89fa-d6bdabfaf2de" class="">
+</p></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-80b2-b1ed-dc5c17eabdd1" class="">
+</p></div><div style="display:contents" dir="auto"><h1 id="3012a77e-92c7-80cd-9017-c2e89fa4ed08" class="">주제 및 목표</h1></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-808a-8a46-eb7520c743d9" class="">프로젝트 목표</p></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-8070-9835-d971f7a301d0" class="">MPS 장비를 이용하여 소재 자동 분류 및 적재·저장 시스템을 구현하고, 서보모터 제어 기술을 적용하여 자동화 공정의 효율성을 향상시키는 것을 목표로 한다.</p></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-808d-8209-e8d8497afa54" class="">또한 HMI를 구축하여 장비 상태를 실시간으로 확인할 수 있도록 하였으며, 소재 판별, 위치 제어, 공정 모니터링 기능을 통합적으로 구현하였다.</p></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-8007-babb-e59817af8fc6" class="">금속 및 비금속 소재를 자동으로 판별하고 지정된 위치로 적재 및 배출하는 자동화 시스템을 구축하여 작업 효율성과 생산성을 향상시켰다.</p></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-80f2-ae91-cf0003dc3232" class="">핵심 공정</p></div><div style="display:contents" dir="auto"><ol type="1" id="3012a77e-92c7-8077-af88-c7b4741c58cb" class="numbered-list" start="1"><li>초기 점검 공정</li></ol></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-80a2-b8c2-ede1346b730a" class="">장비 전원 인가 후 전체 실린더 후진 , 원점 복귀 및 장치 동작 여부를 확인하는 공정이다.</p></div><div style="display:contents" dir="auto"><hr id="3012a77e-92c7-80a0-ab8f-c6f87af3809b"/></div><div style="display:contents" dir="auto"><ol type="1" id="3012a77e-92c7-80df-a1a4-d352a0987216" class="numbered-list" start="2"><li>소재 판별 공정</li></ol></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-803a-b9b4-f0567a2aa3bb" class="">센서를 이용하여 소재를 금속과 비금속으로 자동 판별하며, 판별 결과에 따라 이송 경로를 자동으로 설정한다.금속 소재는 4개 이상 누적 시 배출 실린더를 통해 외부로 배출하며, 비금속 소재는 컨베이어를 통해 저장 박스로 자동 이송된다.</p></div><div style="display:contents" dir="auto"><hr id="3012a77e-92c7-80d9-b4cf-c1590f477d83"/></div><div style="display:contents" dir="auto"><ol type="1" id="3012a77e-92c7-80e2-928d-e6b2b27d3068" class="numbered-list" start="3"><li>자리 비움 공정</li></ol></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-80ed-ae7f-c4d5a74d819d" class="">총 6개의 소재가 창고에 적재된 후 사용하는 공정, 전체 소재를 1층부터 3층까지 순차적으로 컨베이어를 통해 이동시키고 저장 박스로 자동 배출한다.</p></div><div style="display:contents" dir="auto"><hr id="3012a77e-92c7-80e8-8e9f-f97c6e312de4"/></div><div style="display:contents" dir="auto"><ol type="1" id="3012a77e-92c7-8079-9ecd-ee6f94658096" class="numbered-list" start="4"><li>선택 적재 및 비움 기능</li></ol></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-8024-9a09-cc76dd6c3186" class="">사용자가 원하는 층과 위치를 지정하여 소재를 적재하거나 비울 수 있는 기능을 제공한다.</p></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-80aa-8359-f79939935cf8" class="">
+</p></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-804f-b78b-e961a6deeace" class="">핵심 기능</p></div><div style="display:contents" dir="auto"><ol type="1" id="3012a77e-92c7-80c6-8ac9-c61e05c0cb19" class="numbered-list" start="1"><li>작업 모니터링 기능</li></ol></div><div style="display:contents" dir="auto"><ul id="3012a77e-92c7-8020-8cfc-e10a50fbfee1" class="bulleted-list"><li style="list-style-type:disc">실시간 금속 수량, 비금속 수량, 전체 소재 수량 표시</li></ul></div><div style="display:contents" dir="auto"><ul id="3012a77e-92c7-80c1-b888-e682ab408e16" class="bulleted-list"><li style="list-style-type:disc">작업 상태 메시지 및 동작 완료 시간 표시</li></ul></div><div style="display:contents" dir="auto"><ul id="3012a77e-92c7-8013-be18-f5946bc7fdf9" class="bulleted-list"><li style="list-style-type:disc">소재 미투입 대기 시간 표시</li></ul></div><div style="display:contents" dir="auto"><ul id="3012a77e-92c7-805e-9efc-d84e788bd747" class="bulleted-list"><li style="list-style-type:disc">서보모터 현재 위치, 속도, 동작 상태 표시</li></ul></div><div style="display:contents" dir="auto"><ul id="3012a77e-92c7-8041-b64d-caf07707e730" class="bulleted-list"><li style="list-style-type:disc">서보모터 경고 번호 및 에러 번호 표시</li></ul></div><div style="display:contents" dir="auto"><ul id="3012a77e-92c7-8073-8d4b-f9279203fbff" class="bulleted-list"><li style="list-style-type:disc">원점 확립 상태 확인 기능 제공</li></ul></div><div style="display:contents" dir="auto"><hr id="3012a77e-92c7-8017-bf4e-fcba6e01fc9a"/></div><div style="display:contents" dir="auto"><ol type="1" id="3012a77e-92c7-80a8-92ff-f2ef880178a4" class="numbered-list" start="2"><li>HMI 값 조정 기능</li></ol></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-80e0-967e-cee0a18f25f9" class="">HMI를 통해 다음 항목을 사용자 설정 값으로 변경할 수 있다.</p></div><div style="display:contents" dir="auto"><ul id="3012a77e-92c7-8049-b858-f781c6badfb0" class="bulleted-list"><li style="list-style-type:disc">소재 미투입 대기 시간</li></ul></div><div style="display:contents" dir="auto"><ul id="3012a77e-92c7-806b-b8d7-e7ce352151c4" class="bulleted-list"><li style="list-style-type:disc">가공 횟수</li></ul></div><div style="display:contents" dir="auto"><ul id="3012a77e-92c7-800a-8a6f-df590f38a0f9" class="bulleted-list"><li style="list-style-type:disc">가공 시간</li></ul></div><div style="display:contents" dir="auto"><hr id="3012a77e-92c7-805a-b5dd-d68d6d58cb07"/></div><div style="display:contents" dir="auto"><ol type="1" id="3012a77e-92c7-8085-af15-fc18fed15720" class="numbered-list" start="3"><li>티칭 기능</li></ol></div><div style="display:contents" dir="auto"><ul id="3012a77e-92c7-8019-898f-c19240bea785" class="bulleted-list"><li style="list-style-type:disc">1층, 2층, 3층 위치 좌표 수정 가능</li></ul></div><div style="display:contents" dir="auto"><ul id="3012a77e-92c7-80e5-9e56-f1f19a48a122" class="bulleted-list"><li style="list-style-type:disc">티칭 위치 데이터 ROM 저장 기능 제공</li></ul></div><div style="display:contents" dir="auto"><hr id="3012a77e-92c7-80d6-a65c-c03b5477b676"/></div><div style="display:contents" dir="auto"><ol type="1" id="3012a77e-92c7-80a0-b97e-f1c76e3e5892" class="numbered-list" start="4"><li>비상 기능</li></ol></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-8050-bcb2-cffa0813806b" class="">비상 버튼을 통해 모든 공정을 즉시 정지할 수 있으며, 동시에 가공실린더가 상승한다. </p></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-80b2-979f-d97361958246" class="">비상 버튼 하단 램프를 통해 비상 동작 상태를 확인할 수 있다.</p></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-808b-9961-ebf663061146" class="">비상 해제 버튼을 통해 작업을 재개할 수 있다.</p></div><div style="display:contents" dir="auto"><ol type="1" id="3012a77e-92c7-8005-8b94-c5a8f6ecb771" class="numbered-list" start="5"><li>다국어 지원 기능</li></ol></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-80e2-8eaa-f4fddc156287" class="">HMI를 통해 한글과 영어를 선택하여 사용할 수 있다.</p></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-8031-843c-e641e6543d20" class="">
+</p></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-801b-a59a-c07887e56b9f" class="">전원 공급 후 자동 원점 확립 및 전체 작업 동작</p></div><div style="display:contents" dir="ltr"><figure id="3012a77e-92c7-80fc-b0e2-f9122f20eeb8" class="image"><a href="PLC%EC%99%80%20Servo%20Motor%EB%A5%BC%20%ED%99%9C%EC%9A%A9%ED%95%9C%20MPS%20%EA%B8%B0%EB%B0%98%20%EC%84%9C%EB%B3%B4%20%EC%A0%95%EB%B0%80%20%EC%9C%84%EC%B9%98%20%EC%A0%9C%EC%96%B4%20%EB%B0%8F%20%EC%86%8C%EC%9E%AC%20%EC%9E%90%EB%8F%99%20%EB%B6%84/%EC%A0%84%EC%B2%B4_%EB%8F%99%EC%9E%91_qr.png"><img style="width:209.984375px" src="PLC%EC%99%80%20Servo%20Motor%EB%A5%BC%20%ED%99%9C%EC%9A%A9%ED%95%9C%20MPS%20%EA%B8%B0%EB%B0%98%20%EC%84%9C%EB%B3%B4%20%EC%A0%95%EB%B0%80%20%EC%9C%84%EC%B9%98%20%EC%A0%9C%EC%96%B4%20%EB%B0%8F%20%EC%86%8C%EC%9E%AC%20%EC%9E%90%EB%8F%99%20%EB%B6%84/%EC%A0%84%EC%B2%B4_%EB%8F%99%EC%9E%91_qr.png"/></a></figure></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-801a-8ae9-e820fcc25ae9" class="">전체 창고비움 qr코드</p></div><div style="display:contents" dir="ltr"><figure id="3012a77e-92c7-80f7-b502-da3e2d59dd0d" class="image"><a href="PLC%EC%99%80%20Servo%20Motor%EB%A5%BC%20%ED%99%9C%EC%9A%A9%ED%95%9C%20MPS%20%EA%B8%B0%EB%B0%98%20%EC%84%9C%EB%B3%B4%20%EC%A0%95%EB%B0%80%20%EC%9C%84%EC%B9%98%20%EC%A0%9C%EC%96%B4%20%EB%B0%8F%20%EC%86%8C%EC%9E%AC%20%EC%9E%90%EB%8F%99%20%EB%B6%84/%EC%A0%84%EC%B2%B4_%EC%B0%BD%EA%B3%A0_%EB%B9%84%EC%9B%80_qr.png"><img style="width:265.984375px" src="PLC%EC%99%80%20Servo%20Motor%EB%A5%BC%20%ED%99%9C%EC%9A%A9%ED%95%9C%20MPS%20%EA%B8%B0%EB%B0%98%20%EC%84%9C%EB%B3%B4%20%EC%A0%95%EB%B0%80%20%EC%9C%84%EC%B9%98%20%EC%A0%9C%EC%96%B4%20%EB%B0%8F%20%EC%86%8C%EC%9E%AC%20%EC%9E%90%EB%8F%99%20%EB%B6%84/%EC%A0%84%EC%B2%B4_%EC%B0%BD%EA%B3%A0_%EB%B9%84%EC%9B%80_qr.png"/></a></figure></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-80ce-b68d-c7719bbd8572" class="">선택 적재 qr코드</p></div><div style="display:contents" dir="ltr"><figure id="3012a77e-92c7-80e4-8d1f-de6cb80845c1" class="image"><a href="PLC%EC%99%80%20Servo%20Motor%EB%A5%BC%20%ED%99%9C%EC%9A%A9%ED%95%9C%20MPS%20%EA%B8%B0%EB%B0%98%20%EC%84%9C%EB%B3%B4%20%EC%A0%95%EB%B0%80%20%EC%9C%84%EC%B9%98%20%EC%A0%9C%EC%96%B4%20%EB%B0%8F%20%EC%86%8C%EC%9E%AC%20%EC%9E%90%EB%8F%99%20%EB%B6%84/%EC%84%A0%ED%83%9D_%EC%A0%81%EC%9E%AC_qr.png"><img style="width:180.984375px" src="PLC%EC%99%80%20Servo%20Motor%EB%A5%BC%20%ED%99%9C%EC%9A%A9%ED%95%9C%20MPS%20%EA%B8%B0%EB%B0%98%20%EC%84%9C%EB%B3%B4%20%EC%A0%95%EB%B0%80%20%EC%9C%84%EC%B9%98%20%EC%A0%9C%EC%96%B4%20%EB%B0%8F%20%EC%86%8C%EC%9E%AC%20%EC%9E%90%EB%8F%99%20%EB%B6%84/%EC%84%A0%ED%83%9D_%EC%A0%81%EC%9E%AC_qr.png"/></a></figure></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-8018-abb4-e9e0f8746930" class="">선택 창고 비움 qr코드</p></div><div style="display:contents" dir="ltr"><figure id="3012a77e-92c7-80a2-94c6-e94af1daea22" class="image"><a href="PLC%EC%99%80%20Servo%20Motor%EB%A5%BC%20%ED%99%9C%EC%9A%A9%ED%95%9C%20MPS%20%EA%B8%B0%EB%B0%98%20%EC%84%9C%EB%B3%B4%20%EC%A0%95%EB%B0%80%20%EC%9C%84%EC%B9%98%20%EC%A0%9C%EC%96%B4%20%EB%B0%8F%20%EC%86%8C%EC%9E%AC%20%EC%9E%90%EB%8F%99%20%EB%B6%84/%EC%84%A0%ED%83%9D_%EC%A0%80%EC%9E%A5_qr.png"><img style="width:179.984375px" src="PLC%EC%99%80%20Servo%20Motor%EB%A5%BC%20%ED%99%9C%EC%9A%A9%ED%95%9C%20MPS%20%EA%B8%B0%EB%B0%98%20%EC%84%9C%EB%B3%B4%20%EC%A0%95%EB%B0%80%20%EC%9C%84%EC%B9%98%20%EC%A0%9C%EC%96%B4%20%EB%B0%8F%20%EC%86%8C%EC%9E%AC%20%EC%9E%90%EB%8F%99%20%EB%B6%84/%EC%84%A0%ED%83%9D_%EC%A0%80%EC%9E%A5_qr.png"/></a></figure></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-8077-bab4-e1346916c490" class="">비상, 비상 해제 qr코드</p></div><div style="display:contents" dir="ltr"><figure id="3012a77e-92c7-8011-8481-f81f386ebc0e" class="image"><a href="PLC%EC%99%80%20Servo%20Motor%EB%A5%BC%20%ED%99%9C%EC%9A%A9%ED%95%9C%20MPS%20%EA%B8%B0%EB%B0%98%20%EC%84%9C%EB%B3%B4%20%EC%A0%95%EB%B0%80%20%EC%9C%84%EC%B9%98%20%EC%A0%9C%EC%96%B4%20%EB%B0%8F%20%EC%86%8C%EC%9E%AC%20%EC%9E%90%EB%8F%99%20%EB%B6%84/%EB%B9%84%EC%83%81_%EB%B0%8F_%EB%B9%84%EC%83%81%ED%95%B4%EC%A0%9C_qr.png"><img style="width:180.984375px" src="PLC%EC%99%80%20Servo%20Motor%EB%A5%BC%20%ED%99%9C%EC%9A%A9%ED%95%9C%20MPS%20%EA%B8%B0%EB%B0%98%20%EC%84%9C%EB%B3%B4%20%EC%A0%95%EB%B0%80%20%EC%9C%84%EC%B9%98%20%EC%A0%9C%EC%96%B4%20%EB%B0%8F%20%EC%86%8C%EC%9E%AC%20%EC%9E%90%EB%8F%99%20%EB%B6%84/%EB%B9%84%EC%83%81_%EB%B0%8F_%EB%B9%84%EC%83%81%ED%95%B4%EC%A0%9C_qr.png"/></a></figure></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-80e0-b7ec-df0e9bb79618" class="">동작 점검 qr코드</p></div><div style="display:contents" dir="ltr"><figure id="3012a77e-92c7-808b-a267-dc84742425c5" class="image"><a href="PLC%EC%99%80%20Servo%20Motor%EB%A5%BC%20%ED%99%9C%EC%9A%A9%ED%95%9C%20MPS%20%EA%B8%B0%EB%B0%98%20%EC%84%9C%EB%B3%B4%20%EC%A0%95%EB%B0%80%20%EC%9C%84%EC%B9%98%20%EC%A0%9C%EC%96%B4%20%EB%B0%8F%20%EC%86%8C%EC%9E%AC%20%EC%9E%90%EB%8F%99%20%EB%B6%84/%EB%8F%99%EC%9E%91_%EC%A0%90%EA%B2%80_qr.png"><img style="width:180.984375px" src="PLC%EC%99%80%20Servo%20Motor%EB%A5%BC%20%ED%99%9C%EC%9A%A9%ED%95%9C%20MPS%20%EA%B8%B0%EB%B0%98%20%EC%84%9C%EB%B3%B4%20%EC%A0%95%EB%B0%80%20%EC%9C%84%EC%B9%98%20%EC%A0%9C%EC%96%B4%20%EB%B0%8F%20%EC%86%8C%EC%9E%AC%20%EC%9E%90%EB%8F%99%20%EB%B6%84/%EB%8F%99%EC%9E%91_%EC%A0%90%EA%B2%80_qr.png"/></a></figure></div><div style="display:contents" dir="auto"><h1 id="3012a77e-92c7-8067-9176-f233720c14a0" class="">시스템 구성도</h1></div><div style="display:contents" dir="ltr"><figure id="3022a77e-92c7-8022-ae0f-c4e5fccd54a3" class="image"><a href="PLC%EC%99%80%20Servo%20Motor%EB%A5%BC%20%ED%99%9C%EC%9A%A9%ED%95%9C%20MPS%20%EA%B8%B0%EB%B0%98%20%EC%84%9C%EB%B3%B4%20%EC%A0%95%EB%B0%80%20%EC%9C%84%EC%B9%98%20%EC%A0%9C%EC%96%B4%20%EB%B0%8F%20%EC%86%8C%EC%9E%AC%20%EC%9E%90%EB%8F%99%20%EB%B6%84/%EC%B0%90%EC%B5%9C%EC%A2%85%EB%8B%A4%EC%9D%B4%EC%96%B4%EA%B7%B8%EB%9E%A8.jpg"><img style="width:365px" src="PLC%EC%99%80%20Servo%20Motor%EB%A5%BC%20%ED%99%9C%EC%9A%A9%ED%95%9C%20MPS%20%EA%B8%B0%EB%B0%98%20%EC%84%9C%EB%B3%B4%20%EC%A0%95%EB%B0%80%20%EC%9C%84%EC%B9%98%20%EC%A0%9C%EC%96%B4%20%EB%B0%8F%20%EC%86%8C%EC%9E%AC%20%EC%9E%90%EB%8F%99%20%EB%B6%84/%EC%B0%90%EC%B5%9C%EC%A2%85%EB%8B%A4%EC%9D%B4%EC%96%B4%EA%B7%B8%EB%9E%A8.jpg"/></a></figure></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-801e-b78b-ede9621ed69c" class="">기본동작</p></div><div style="display:contents" dir="ltr"><figure id="3012a77e-92c7-8013-9b09-d3028742c875" class="image"><a href="PLC%EC%99%80%20Servo%20Motor%EB%A5%BC%20%ED%99%9C%EC%9A%A9%ED%95%9C%20MPS%20%EA%B8%B0%EB%B0%98%20%EC%84%9C%EB%B3%B4%20%EC%A0%95%EB%B0%80%20%EC%9C%84%EC%B9%98%20%EC%A0%9C%EC%96%B4%20%EB%B0%8F%20%EC%86%8C%EC%9E%AC%20%EC%9E%90%EB%8F%99%20%EB%B6%84/%EA%B8%B0%EB%B3%B8%EB%8F%99%EC%9E%91_%EC%B5%9C%EC%A2%85.jpg"><img style="width:614.7750244140625px" src="PLC%EC%99%80%20Servo%20Motor%EB%A5%BC%20%ED%99%9C%EC%9A%A9%ED%95%9C%20MPS%20%EA%B8%B0%EB%B0%98%20%EC%84%9C%EB%B3%B4%20%EC%A0%95%EB%B0%80%20%EC%9C%84%EC%B9%98%20%EC%A0%9C%EC%96%B4%20%EB%B0%8F%20%EC%86%8C%EC%9E%AC%20%EC%9E%90%EB%8F%99%20%EB%B6%84/%EA%B8%B0%EB%B3%B8%EB%8F%99%EC%9E%91_%EC%B5%9C%EC%A2%85.jpg"/></a></figure></div><div style="display:contents" dir="auto"><h1 id="3012a77e-92c7-80e7-bb2c-c60dcf128352" class="">핵심 알고리즘 설명</h1></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-80ae-a8cb-c7a52593b001" class="">소재 적재 및 비움 제어 알고리즘</p></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-806c-b43a-f330f2bb9f03" class="">본 시스템은 선택 적재·선택 비움 기능과 전체 비움 기능을 하나의 위치 제어 구조로 통합하여 설계하였다.</p></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-8039-99b9-e808034a2d41" class="">동일한 서보 위치 이동 로직을 공유하면서도, 기능 간 충돌을 방지하기 위해 명확한 동작 구분과 인터락 구조를 적용하였다.</p></div><div style="display:contents" dir="auto"><hr id="3012a77e-92c7-80fa-813d-e28adbdfd975"/></div><div style="display:contents" dir="auto"><ol type="1" id="3012a77e-92c7-8049-80fc-cc913bedcd48" class="numbered-list" start="1"><li>선택 적재 및 선택 비움 로직</li></ol></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-8095-b1f9-e24540238902" class="">선택 적재 및 선택 비움 기능은 위치 버튼별 메모리 기반 방식으로 구현하였다.</p></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-8085-9252-c0ac5e0aec8a" class="">사용자가 특정 층과 위치를 선택하면, 해당 버튼에 대응되는 메모리에 저장된 ZP(서보 위치 데이터)를 호출하여 서보모터가 지정된 위치로 이동하도록 구성하였다.</p></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-8030-9bff-c14bd7b06b6b" class="">이 방식은 티칭 기능을 통해 각 층의 위치 값을 유연하게 수정할 수 있으며,</p></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-808a-a234-feb01b2e675d" class="">위치 변경 시 프로그램 수정 없이 대응 가능하도록 하여 유지보수성과 확장성을 고려한 설계이다.</p></div><div style="display:contents" dir="auto"><hr id="3012a77e-92c7-80ff-8ca9-eeca64854408"/></div><div style="display:contents" dir="auto"><ol type="1" id="3012a77e-92c7-805d-a48d-daecf53c5c47" class="numbered-list" start="2"><li>전체 비움 로직</li></ol></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-80d9-9666-c33aacbe40b5" class="">전체 비움 기능은 창고에 적재된 모든 소재를 사전에 정의된 순서에 따라 자동으로 배출하도록 설계하였다.</p></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-80ed-92c8-d92a1b7266ae" class="">배출 순서는 금속 소재를 1층부터 3층까지 먼저 배출한 후, 비금속 소재를 1층부터 3층까지 배출하는 구조이다.</p></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-8024-8b38-d74e33f8c05d" class="">해당 로직은 카운터 기반 순차 제어 방식을 사용하여 총 6단계로 구성하였다.</p></div><div style="display:contents" dir="auto"><ul id="3012a77e-92c7-806d-ab05-d6836a1a2f53" class="bulleted-list"><li style="list-style-type:disc">카운트 0 : 금속 1층</li></ul></div><div style="display:contents" dir="auto"><ul id="3012a77e-92c7-80bc-bbad-cc59257b73a7" class="bulleted-list"><li style="list-style-type:disc">카운트 1 : 금속 2층</li></ul></div><div style="display:contents" dir="auto"><ul id="3012a77e-92c7-806d-8651-db768134a226" class="bulleted-list"><li style="list-style-type:disc">카운트 2 : 금속 3층</li></ul></div><div style="display:contents" dir="auto"><ul id="3012a77e-92c7-8064-857b-c0bec9754cbb" class="bulleted-list"><li style="list-style-type:disc">카운트 3 : 비금속 1층</li></ul></div><div style="display:contents" dir="auto"><ul id="3012a77e-92c7-8061-97e2-daa7dd5b15d6" class="bulleted-list"><li style="list-style-type:disc">카운트 4 : 비금속 2층</li></ul></div><div style="display:contents" dir="auto"><ul id="3012a77e-92c7-80cc-997c-c478361bb502" class="bulleted-list"><li style="list-style-type:disc">카운트 5 : 비금속 3층</li></ul></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-80a1-bbba-c10c9a2bfa44" class="">카운트 값에 따라 서보 위치를 자동으로 전환하여, 전체 소재가 누락 없이 순차적으로 배출되도록 구현하였다.</p></div><div style="display:contents" dir="auto"><hr id="3012a77e-92c7-8001-a4d5-e83ce578c56d"/></div><div style="display:contents" dir="auto"><ol type="1" id="3012a77e-92c7-80a8-9532-dd7000955b18" class="numbered-list" start="3"><li>기능 구분 및 충돌 방지 인터락 설계</li></ol></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-80c2-be0e-d83a93c1aa2c" class="">선택 비움 기능과 전체 비움 기능은 동일한 위치 이동 알고리즘을 공유하기 때문에,</p></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-80bc-aec2-e38bda68dd91" class="">동시에 동작할 경우 오동작이 발생할 가능성이 있다.</p></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-801a-bd8d-e24d9f764aa1" class="">이를 방지하기 위해 선택 비움 전용 메모리를 B접점 방식으로 구성하였다.</p></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-80ee-94c0-eb5e42bfb4a2" class="">선택 비움 동작 시에는 해당 접점이 OFF 상태가 되어 전체 비움 로직이 동작하지 않도록 차단되며,</p></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-80ec-b6e8-e7638f2170ee" class="">이를 통해 두 기능을 명확히 구분하고 동시 동작에 의한 충돌을 원천적으로 방지하였다.</p></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-807f-9c8c-c30998a23999" class="">이와 같은 인터락 구조를 통해 시스템의 동작 안정성, 신뢰성, 유지보수성을 향상시켰다.</p></div><div style="display:contents" dir="auto"><h1 id="3012a77e-92c7-80e5-bbbc-c70aeeb27ff3" class="">HMI 화면 구성과 설명</h1></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-808e-be79-e8ae9bafcccc" class="">
+</p></div><div style="display:contents" dir="ltr"><figure id="3012a77e-92c7-80a9-b82c-fd717fbf22eb" class="image"><a href="PLC%EC%99%80%20Servo%20Motor%EB%A5%BC%20%ED%99%9C%EC%9A%A9%ED%95%9C%20MPS%20%EA%B8%B0%EB%B0%98%20%EC%84%9C%EB%B3%B4%20%EC%A0%95%EB%B0%80%20%EC%9C%84%EC%B9%98%20%EC%A0%9C%EC%96%B4%20%EB%B0%8F%20%EC%86%8C%EC%9E%AC%20%EC%9E%90%EB%8F%99%20%EB%B6%84/%EB%A9%94%EC%9D%B8_%ED%99%94%EB%A9%B4_%EC%84%A4%EB%AA%85.png"><img style="width:709.9750366210938px" src="PLC%EC%99%80%20Servo%20Motor%EB%A5%BC%20%ED%99%9C%EC%9A%A9%ED%95%9C%20MPS%20%EA%B8%B0%EB%B0%98%20%EC%84%9C%EB%B3%B4%20%EC%A0%95%EB%B0%80%20%EC%9C%84%EC%B9%98%20%EC%A0%9C%EC%96%B4%20%EB%B0%8F%20%EC%86%8C%EC%9E%AC%20%EC%9E%90%EB%8F%99%20%EB%B6%84/%EB%A9%94%EC%9D%B8_%ED%99%94%EB%A9%B4_%EC%84%A4%EB%AA%85.png"/></a></figure></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-80c1-8ecd-c8d33f7de61a" class="">메인 화면</p></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-8039-a06f-e0f72b81fe86" class="">
+</p></div><div style="display:contents" dir="ltr"><figure id="3012a77e-92c7-8011-98b1-fc8a314b8c50" class="image"><a href="PLC%EC%99%80%20Servo%20Motor%EB%A5%BC%20%ED%99%9C%EC%9A%A9%ED%95%9C%20MPS%20%EA%B8%B0%EB%B0%98%20%EC%84%9C%EB%B3%B4%20%EC%A0%95%EB%B0%80%20%EC%9C%84%EC%B9%98%20%EC%A0%9C%EC%96%B4%20%EB%B0%8F%20%EC%86%8C%EC%9E%AC%20%EC%9E%90%EB%8F%99%20%EB%B6%84/%EC%84%9C%EB%B3%B4_%EB%AA%A8%ED%84%B0_%ED%99%94%EB%A9%B4_%EC%84%A4%EB%AA%85.png"><img style="width:709.9874877929688px" src="PLC%EC%99%80%20Servo%20Motor%EB%A5%BC%20%ED%99%9C%EC%9A%A9%ED%95%9C%20MPS%20%EA%B8%B0%EB%B0%98%20%EC%84%9C%EB%B3%B4%20%EC%A0%95%EB%B0%80%20%EC%9C%84%EC%B9%98%20%EC%A0%9C%EC%96%B4%20%EB%B0%8F%20%EC%86%8C%EC%9E%AC%20%EC%9E%90%EB%8F%99%20%EB%B6%84/%EC%84%9C%EB%B3%B4_%EB%AA%A8%ED%84%B0_%ED%99%94%EB%A9%B4_%EC%84%A4%EB%AA%85.png"/></a></figure></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-8041-b3f2-f9efdb9adb29" class="">서보 모터 조작 화면</p></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-8022-b58e-f6993905c87a" class="">
+</p></div><div style="display:contents" dir="ltr"><figure id="3012a77e-92c7-80b0-8db7-f07887d74b20" class="image"><a href="PLC%EC%99%80%20Servo%20Motor%EB%A5%BC%20%ED%99%9C%EC%9A%A9%ED%95%9C%20MPS%20%EA%B8%B0%EB%B0%98%20%EC%84%9C%EB%B3%B4%20%EC%A0%95%EB%B0%80%20%EC%9C%84%EC%B9%98%20%EC%A0%9C%EC%96%B4%20%EB%B0%8F%20%EC%86%8C%EC%9E%AC%20%EC%9E%90%EB%8F%99%20%EB%B6%84/%EB%8F%99%EC%9E%91_%ED%99%94%EB%A9%B4_%EC%84%A4%EB%AA%85.png"><img style="width:709.9750366210938px" src="PLC%EC%99%80%20Servo%20Motor%EB%A5%BC%20%ED%99%9C%EC%9A%A9%ED%95%9C%20MPS%20%EA%B8%B0%EB%B0%98%20%EC%84%9C%EB%B3%B4%20%EC%A0%95%EB%B0%80%20%EC%9C%84%EC%B9%98%20%EC%A0%9C%EC%96%B4%20%EB%B0%8F%20%EC%86%8C%EC%9E%AC%20%EC%9E%90%EB%8F%99%20%EB%B6%84/%EB%8F%99%EC%9E%91_%ED%99%94%EB%A9%B4_%EC%84%A4%EB%AA%85.png"/></a></figure></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-80cd-8f42-dcc142903ae8" class="">동작 화면</p></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-8011-aa38-ccfb6a5f5ed1" class="">
+</p></div><div style="display:contents" dir="auto"><div id="3012a77e-92c7-80a1-9ace-efdbfeb79e81" class="column-list"><div style="display:contents" dir="auto"><div id="3012a77e-92c7-800a-a27d-c9871d8eb8a0" style="width:33.333333333333336%" class="column"><div style="display:contents" dir="ltr"><figure id="3012a77e-92c7-801e-84a9-f25b72e77dfc" class="image"><a href="PLC%EC%99%80%20Servo%20Motor%EB%A5%BC%20%ED%99%9C%EC%9A%A9%ED%95%9C%20MPS%20%EA%B8%B0%EB%B0%98%20%EC%84%9C%EB%B3%B4%20%EC%A0%95%EB%B0%80%20%EC%9C%84%EC%B9%98%20%EC%A0%9C%EC%96%B4%20%EB%B0%8F%20%EC%86%8C%EC%9E%AC%20%EC%9E%90%EB%8F%99%20%EB%B6%84/%EB%A9%94%EC%9D%B8%ED%99%94%EB%A9%B4_%EC%98%81%EC%96%B4.png"><img style="width:709.9874877929688px" src="PLC%EC%99%80%20Servo%20Motor%EB%A5%BC%20%ED%99%9C%EC%9A%A9%ED%95%9C%20MPS%20%EA%B8%B0%EB%B0%98%20%EC%84%9C%EB%B3%B4%20%EC%A0%95%EB%B0%80%20%EC%9C%84%EC%B9%98%20%EC%A0%9C%EC%96%B4%20%EB%B0%8F%20%EC%86%8C%EC%9E%AC%20%EC%9E%90%EB%8F%99%20%EB%B6%84/%EB%A9%94%EC%9D%B8%ED%99%94%EB%A9%B4_%EC%98%81%EC%96%B4.png"/></a></figure></div></div></div><div style="display:contents" dir="auto"><div id="3012a77e-92c7-80f0-b57f-fb57bd746607" style="width:33.333333333333336%" class="column"><div style="display:contents" dir="ltr"><figure id="3012a77e-92c7-80a7-adc0-c915dda669a2" class="image"><a href="PLC%EC%99%80%20Servo%20Motor%EB%A5%BC%20%ED%99%9C%EC%9A%A9%ED%95%9C%20MPS%20%EA%B8%B0%EB%B0%98%20%EC%84%9C%EB%B3%B4%20%EC%A0%95%EB%B0%80%20%EC%9C%84%EC%B9%98%20%EC%A0%9C%EC%96%B4%20%EB%B0%8F%20%EC%86%8C%EC%9E%AC%20%EC%9E%90%EB%8F%99%20%EB%B6%84/%EC%84%9C%EB%B3%B4%ED%99%94%EB%A9%B4_%EC%98%81%EC%96%B4.png"><img style="width:709.9874877929688px" src="PLC%EC%99%80%20Servo%20Motor%EB%A5%BC%20%ED%99%9C%EC%9A%A9%ED%95%9C%20MPS%20%EA%B8%B0%EB%B0%98%20%EC%84%9C%EB%B3%B4%20%EC%A0%95%EB%B0%80%20%EC%9C%84%EC%B9%98%20%EC%A0%9C%EC%96%B4%20%EB%B0%8F%20%EC%86%8C%EC%9E%AC%20%EC%9E%90%EB%8F%99%20%EB%B6%84/%EC%84%9C%EB%B3%B4%ED%99%94%EB%A9%B4_%EC%98%81%EC%96%B4.png"/></a></figure></div></div></div><div style="display:contents" dir="auto"><div id="3012a77e-92c7-80ee-9d45-fbe211be915a" style="width:33.33333333333333%" class="column"><div style="display:contents" dir="ltr"><figure id="3012a77e-92c7-80c0-9abd-dabbf9e09a6b" class="image"><a href="PLC%EC%99%80%20Servo%20Motor%EB%A5%BC%20%ED%99%9C%EC%9A%A9%ED%95%9C%20MPS%20%EA%B8%B0%EB%B0%98%20%EC%84%9C%EB%B3%B4%20%EC%A0%95%EB%B0%80%20%EC%9C%84%EC%B9%98%20%EC%A0%9C%EC%96%B4%20%EB%B0%8F%20%EC%86%8C%EC%9E%AC%20%EC%9E%90%EB%8F%99%20%EB%B6%84/%EB%8F%99%EC%9E%91%ED%99%94%EB%A9%B4_%EC%98%81%EC%96%B4.png"><img style="width:709.9874877929688px" src="PLC%EC%99%80%20Servo%20Motor%EB%A5%BC%20%ED%99%9C%EC%9A%A9%ED%95%9C%20MPS%20%EA%B8%B0%EB%B0%98%20%EC%84%9C%EB%B3%B4%20%EC%A0%95%EB%B0%80%20%EC%9C%84%EC%B9%98%20%EC%A0%9C%EC%96%B4%20%EB%B0%8F%20%EC%86%8C%EC%9E%AC%20%EC%9E%90%EB%8F%99%20%EB%B6%84/%EB%8F%99%EC%9E%91%ED%99%94%EB%A9%B4_%EC%98%81%EC%96%B4.png"/></a></figure></div></div></div></div></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-80bb-ac17-c795809b165c" class="">영어 화면</p></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-80f3-a3d4-c08c5887c18f" class="">
+</p></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-80ed-97fc-db9b360bd094" class="">다국어 전환 기능</p></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-80e7-8b4b-f9846be6ece8" class="">Comment 기능을 활용하여 한글과 영어 두 가지 언어를 입력하였으며, Word 스위치를 이용하여 선택한 언어에 따라 HMI 화면 표시 언어가 변경되도록 구성하였다. 이를 통해 작업 환경에 따라 언어 전환이 가능하도록 하였다.</p></div><div style="display:contents" dir="ltr"><figure id="3012a77e-92c7-80f8-b0a5-c43b23939979" class="image" style="text-align:left"><a href="PLC%EC%99%80%20Servo%20Motor%EB%A5%BC%20%ED%99%9C%EC%9A%A9%ED%95%9C%20MPS%20%EA%B8%B0%EB%B0%98%20%EC%84%9C%EB%B3%B4%20%EC%A0%95%EB%B0%80%20%EC%9C%84%EC%B9%98%20%EC%A0%9C%EC%96%B4%20%EB%B0%8F%20%EC%86%8C%EC%9E%AC%20%EC%9E%90%EB%8F%99%20%EB%B6%84/64fb9dd7-361e-457e-91c2-3acde6e20608.png"><img style="width:552.4620060790273px" src="PLC%EC%99%80%20Servo%20Motor%EB%A5%BC%20%ED%99%9C%EC%9A%A9%ED%95%9C%20MPS%20%EA%B8%B0%EB%B0%98%20%EC%84%9C%EB%B3%B4%20%EC%A0%95%EB%B0%80%20%EC%9C%84%EC%B9%98%20%EC%A0%9C%EC%96%B4%20%EB%B0%8F%20%EC%86%8C%EC%9E%AC%20%EC%9E%90%EB%8F%99%20%EB%B6%84/64fb9dd7-361e-457e-91c2-3acde6e20608.png"/></a></figure></div><div style="display:contents" dir="ltr"><figure id="3012a77e-92c7-8053-baa1-ff84c609b835" class="image"><a href="PLC%EC%99%80%20Servo%20Motor%EB%A5%BC%20%ED%99%9C%EC%9A%A9%ED%95%9C%20MPS%20%EA%B8%B0%EB%B0%98%20%EC%84%9C%EB%B3%B4%20%EC%A0%95%EB%B0%80%20%EC%9C%84%EC%B9%98%20%EC%A0%9C%EC%96%B4%20%EB%B0%8F%20%EC%86%8C%EC%9E%AC%20%EC%9E%90%EB%8F%99%20%EB%B6%84/image.png"><img style="width:709.9750366210938px" src="PLC%EC%99%80%20Servo%20Motor%EB%A5%BC%20%ED%99%9C%EC%9A%A9%ED%95%9C%20MPS%20%EA%B8%B0%EB%B0%98%20%EC%84%9C%EB%B3%B4%20%EC%A0%95%EB%B0%80%20%EC%9C%84%EC%B9%98%20%EC%A0%9C%EC%96%B4%20%EB%B0%8F%20%EC%86%8C%EC%9E%AC%20%EC%9E%90%EB%8F%99%20%EB%B6%84/image.png"/></a></figure></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-80ea-bd06-ffc3cd3a533c" class="">수치 입력 기능</p></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-8028-85b3-cd763ab7e68d" class="">Numerical Input 기능을 적용하여 작업자가 HMI 화면에서 가공 횟수, 가공 시간 등 공정 설정 값을 직접 입력할 수 있도록 구현하였다. 이를 통해 공정 조건을 쉽게 변경할 수 있도록 하였다.</p></div><div style="display:contents" dir="ltr"><figure id="3012a77e-92c7-8057-bff7-ea0e42e15bd6" class="image"><a href="PLC%EC%99%80%20Servo%20Motor%EB%A5%BC%20%ED%99%9C%EC%9A%A9%ED%95%9C%20MPS%20%EA%B8%B0%EB%B0%98%20%EC%84%9C%EB%B3%B4%20%EC%A0%95%EB%B0%80%20%EC%9C%84%EC%B9%98%20%EC%A0%9C%EC%96%B4%20%EB%B0%8F%20%EC%86%8C%EC%9E%AC%20%EC%9E%90%EB%8F%99%20%EB%B6%84/image%201.png"><img style="width:709.9874877929688px" src="PLC%EC%99%80%20Servo%20Motor%EB%A5%BC%20%ED%99%9C%EC%9A%A9%ED%95%9C%20MPS%20%EA%B8%B0%EB%B0%98%20%EC%84%9C%EB%B3%B4%20%EC%A0%95%EB%B0%80%20%EC%9C%84%EC%B9%98%20%EC%A0%9C%EC%96%B4%20%EB%B0%8F%20%EC%86%8C%EC%9E%AC%20%EC%9E%90%EB%8F%99%20%EB%B6%84/image%201.png"/></a></figure></div><div style="display:contents" dir="auto"><h1 id="3012a77e-92c7-804c-9324-de8e169f3fb4" class="">서보모터 구성과 설명</h1></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-808f-8549-f10fba81a3ba" class="">1. 서보 시스템 구성</p></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-8069-9a19-f96b442f6d62" class="">본 설비는 정밀 위치 제어를 위해 서보 모터 제어 방식을 적용하였다.<br/>서보 제어 구성은 다음과 같다.</p></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-8051-a441-c7293b8a53a6" class="">PLC → 위치결정 모듈 → Servo Amp → Servo Motor → Servo Amp(Feedback)</p></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-80cd-9b4c-d3e297861fb3" class="">PLC에서 위치 명령을 생성하고, 위치결정 모듈을 통해 서보 앰프로 전달한다.<br/>서보 앰프는 명령 값에 따라 서보 모터를 구동하며, 엔코더 피드백을 통해 위치와 속도를 제어한다.</p></div><div style="display:contents" dir="auto"><hr id="3012a77e-92c7-8023-a062-fdaecf36cd7a"/></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-80d3-b8d6-cd50452299bd" class="">2. 서보 파라미터 설정</p></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-80c4-b372-e3bbb163b7db" class="">서보 모터의 안정적인 동작과 반복 정밀도 확보를 위해 주요 파라미터를 설정하였다.</p></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-806c-acb5-d6bed88ca84c" class="">원점복귀 파라미터 설정을 통해 기준 위치를 명확히 설정</p></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-8091-bdc2-da3279ed5018" class="">가속·감속 시간 설정으로 기계 충격 최소화</p></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-80dd-a2c9-e8988ece8fe9" class="">공정에 적합한 속도 및 위치 제어 값 적용</p></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-807f-be10-f4eccb2f22b1" class="">엔코더 피드백을 이용한 위치 오차 보정</p></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-8077-8419-c4cff4dfb6cf" class="">
+</p></div><div style="display:contents" dir="auto"><ol type="1" id="3012a77e-92c7-800e-b11a-c7614378b3f2" class="numbered-list" start="3"><li>INC 적용</li></ol></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-80bb-85ec-d89a308e2a2d" class="">AXIS Pointer INC 기능 사용<br/>각 층 위치를 개별 저장하지 않고 층간 높이 값만 설정<br/>설정 값 감소 및 유지보수성 향상</p></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-80ae-a762-e66a25671a27" class="">
+</p></div><div style="display:contents" dir="ltr"><figure id="3012a77e-92c7-8097-a08c-d63d28958e43" class="image"><a href="PLC%EC%99%80%20Servo%20Motor%EB%A5%BC%20%ED%99%9C%EC%9A%A9%ED%95%9C%20MPS%20%EA%B8%B0%EB%B0%98%20%EC%84%9C%EB%B3%B4%20%EC%A0%95%EB%B0%80%20%EC%9C%84%EC%B9%98%20%EC%A0%9C%EC%96%B4%20%EB%B0%8F%20%EC%86%8C%EC%9E%AC%20%EC%9E%90%EB%8F%99%20%EB%B6%84/image%202.png"><img style="width:709.9500122070312px" src="PLC%EC%99%80%20Servo%20Motor%EB%A5%BC%20%ED%99%9C%EC%9A%A9%ED%95%9C%20MPS%20%EA%B8%B0%EB%B0%98%20%EC%84%9C%EB%B3%B4%20%EC%A0%95%EB%B0%80%20%EC%9C%84%EC%B9%98%20%EC%A0%9C%EC%96%B4%20%EB%B0%8F%20%EC%86%8C%EC%9E%AC%20%EC%9E%90%EB%8F%99%20%EB%B6%84/image%202.png"/></a></figure></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-8055-a595-ccdf18dcf76a" class="">Axis Positioning Data</p></div><div style="display:contents" dir="auto"><h1 id="3012a77e-92c7-805a-bed9-d2282f3ba873" class="">트러블 슈팅 사례</h1></div><div style="display:contents" dir="auto"><ol type="1" id="3012a77e-92c7-80b2-9e32-f4576527ce93" class="numbered-list" start="1"><li>문제 상황</li></ol></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-8015-bb69-cbc164e4e37c" class="">동작 완료 시간을 측정하도록 회로를 구성하였으나, 공정 종료 이후에도 시간이 누적되어 실제 동작 시간과 다른 값이 표시되는 문제가 발생하였다.</p></div><div style="display:contents" dir="auto"><hr id="3012a77e-92c7-80a7-8273-f72217b7079b"/></div><div style="display:contents" dir="auto"><ol type="1" id="3012a77e-92c7-809b-8c5a-e6af8855a30d" class="numbered-list" start="2"><li>원인 분석</li></ol></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-80ca-8de3-ccf60d3780dd" class="">동작 완료 시간을 저장하는 레지스터가 공정 시작 시 초기화되지 않아 이전 공정의 측정 값이 그대로 유지되는 구조였다.</p></div><div style="display:contents" dir="auto"><hr id="3012a77e-92c7-80aa-8145-fd21de8b4dc7"/></div><div style="display:contents" dir="auto"><ol type="1" id="3012a77e-92c7-8084-9baa-f33dcb1ab792" class="numbered-list" start="3"><li>해결 방법</li></ol></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-80e2-94ab-d77a7b904746" class="">공정 시작 조건을 추가하여 동작 시작 시 시간 측정 레지스터가 초기화되도록 회로를 수정하였다.</p></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-808f-8b13-cfb95ad61d9b" class="">결과</p></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-8052-90b6-f3990cb7ef4e" class="">각 공정 수행 시 실제 동작 시간만 측정되도록 개선되었으며, 공정 시간 모니터링의 신뢰성을 확보할 수 있었다.</p></div><div style="display:contents" dir="ltr"><figure id="3012a77e-92c7-80b7-b2cf-d04ead12a695" class="image"><a href="PLC%EC%99%80%20Servo%20Motor%EB%A5%BC%20%ED%99%9C%EC%9A%A9%ED%95%9C%20MPS%20%EA%B8%B0%EB%B0%98%20%EC%84%9C%EB%B3%B4%20%EC%A0%95%EB%B0%80%20%EC%9C%84%EC%B9%98%20%EC%A0%9C%EC%96%B4%20%EB%B0%8F%20%EC%86%8C%EC%9E%AC%20%EC%9E%90%EB%8F%99%20%EB%B6%84/image%203.png"><img style="width:709.9750366210938px" src="PLC%EC%99%80%20Servo%20Motor%EB%A5%BC%20%ED%99%9C%EC%9A%A9%ED%95%9C%20MPS%20%EA%B8%B0%EB%B0%98%20%EC%84%9C%EB%B3%B4%20%EC%A0%95%EB%B0%80%20%EC%9C%84%EC%B9%98%20%EC%A0%9C%EC%96%B4%20%EB%B0%8F%20%EC%86%8C%EC%9E%AC%20%EC%9E%90%EB%8F%99%20%EB%B6%84/image%203.png"/></a></figure></div><div style="display:contents" dir="auto"><h1 id="3012a77e-92c7-8007-a18d-f6fd91acfd4f" class="">안전 설계</h1></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-80f3-8883-fc4f3aafebaa" class="">Hardware Limit Sensor (FLS &amp; RLS)</p></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-809f-8688-e12afea28991" class="">모터 레일 양 끝에 설치된 물리적 스위치이다.</p></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-807e-b062-fecc9cd70f31" class="">FLS: 전진 한계, RLS: 후진 한계</p></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-803d-86ea-d89dea8a75c1" class="">B접점(NC) 적용: 전선 단선이나 전원 차단 시에도 장비가 자동으로 정지하도록 설계<br/>→ 안전 사고를 방지하는 Fail-Safe 구조를 위해서다.</p></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-80b9-b9cd-e30114c30617" class="">Software Limit Logic</p></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-8031-a2ea-cc7f547305be" class="">하드웨어 리미트 도달 전 PLC 상 가상의 벽으로 위치 제한</p></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-80c4-9bd0-fe3b6dac0243" class="">설정 범위를 벗어나면 에러 발생 및 모터 정지</p></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-80a1-9fa1-e733e14f2310" class="">기계적 충격 최소화 및 이중 안전 확보하기 위해서이다.</p></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-80fe-b2b2-dd02c973bc86" class="">
+</p></div><div style="display:contents" dir="auto"><ol type="1" id="3012a77e-92c7-80a9-9cea-ca788289814f" class="numbered-list" start="1"><li>선택 적재 인터락</li></ol></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-809e-9b18-d8247498e04e" class="">선택 적재 동작 이후에는 일반 자동 적재가 수행되지 않도록 구성하였다.</p></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-80c6-825a-d003d1ea254b" class="">선택 적재로 창고 위치가 변경된 상태에서 자동 적재가 수행될 경우, 적재 위치 오류가 발생할 수 있기 때문이다.</p></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-80e6-9ee1-f5c9b3df3918" class="">따라서 선택 적재 이후 적재 작업은 선택 적재 모드에서만 가능하도록 설계하였다.</p></div><div style="display:contents" dir="auto"><hr id="3012a77e-92c7-8099-9031-cc82ce59b528"/></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-805b-96e7-efe02a4bc0a5" class="">선택 배출 수행 후에는 자동 적재 동작을 제한하였다.</p></div><div style="display:contents" dir="auto"><ol type="1" id="3012a77e-92c7-80c1-8172-ec9cacf7846e" class="numbered-list" start="2"><li>선택 배출 인터락</li></ol></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-80f0-805d-c1259437181a" class="">선택 배출로 인해 창고 내부 소재 배치가 변경되므로, 자동 적재 수행 시 소재 관리 오류가 발생할 수 있다.</p></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-8061-a49c-e6cb3513bd9e" class="">이후 적재 작업은 선택 적재를 통해 수행하도록 구성하였다.</p></div><div style="display:contents" dir="auto"><hr id="3012a77e-92c7-80a1-ad0e-de2884dc0647"/></div><div style="display:contents" dir="auto"><ol type="1" id="3012a77e-92c7-80c0-a287-c0ec3ce15fb4" class="numbered-list" start="3"><li>선택 적재 시 소재 판별 제외</li></ol></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-807a-a5f6-f6703215740f" class="">선택 적재 동작은 사용자가 직접 위치를 지정하는 기능이므로, 자동 운전에서 사용하는 소재 판별 로직을 적용하지 않도록 구성하였다.</p></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-8021-8d28-e793830da591" class="">이를 통해 사용자가 지정한 위치로 바로 이동하도록 설계하였다.</p></div><div style="display:contents" dir="auto"><h1 id="3012a77e-92c7-80ca-820f-dfcd7d7ead74" class="">개선 효과</h1></div><div style="display:contents" dir="auto"><ol type="1" id="3012a77e-92c7-80dc-8416-f925daf243a3" class="numbered-list" start="1"><li>택타임 측정 기능 구현</li></ol></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-80ff-b42f-ca6391536273" class="">QCPU(Q 모드) / QnACPU 프로그래밍 매뉴얼의 특수 메모리 SM412(1초 클록 신호)를 활용하여 택타임 측정 기능을 구현하였다.<br/>SM412 신호와 INCP 명령어를 사용하여 임의 레지스터 값을 1초 단위로 증가시키도록 구성하였으며, 이를 통해 공정 시작부터 동작 완료까지의 시간을 측정할 수 있도록 하였다. 따라서 작업 시간 확인이 가능해졌으며, 공정 효율 분석 및 작업 조건 개선에 활용할 수 있었다.</p></div><div style="display:contents" dir="auto"><hr id="3012a77e-92c7-80d8-aa2d-ee096fee708c"/></div><div style="display:contents" dir="auto"><ol type="1" id="3012a77e-92c7-80ca-a897-f5071b1b3708" class="numbered-list" start="2"><li>비상 정지 시 안전 동작 개선</li></ol></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-8015-947b-c4a88a66ea3a" class="">비상 정지 발생 시 가공 실린더는 즉시 상승하도록 구성하였으며, 서보 모터는 동작 완료를 기다리지 않고 축 정지 기능을 통해 즉시 정지하도록 설계하였다. 따라서 비상 상황 발생 시 장비 충돌 위험을 감소시키고 작업 안전성을 향상시킬 수 있었다.</p></div><div style="display:contents" dir="auto"><h1 id="3012a77e-92c7-8043-a274-e19aaed8c77b" class="">One-paper Maintenance Manual</h1></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-8093-b45f-d92c1263205b" class="">One-paper Maintenance Manual</p></div><div style="display:contents" dir="auto"><ol type="1" id="3012a77e-92c7-80e3-9a82-d7b6ffcd8513" class="numbered-list" start="1"><li>설비 개요</li></ol></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-80cd-bb85-d5242ae8ebe9" class="">본 설비는 투입된 소재를 금속 및 비금속으로 판별하여 자동으로 분류하고, 선택된 창고 위치에 적재·저장 및 배출을 수행하는 PMS 자동화 장비이다.</p></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-809d-9794-e861a064c7c9" class="">소재 판별 결과에 따라 금속 소재는 좌측 창고, 비금속 소재는 우측 창고로 이송되며, 각 창고는 1층부터 3층까지 총 6개의 적재 위치로 구성되어 있다.</p></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-80f2-8c86-e0f63cdbc3d2" class="">설비는 서보 모터를 이용한 정밀 위치 제어 방식을 적용하였으며, 설비 기동 시 자동 원점확립(원점복귀)을 수행하여 초기 위치를 설정한다.</p></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-8067-8743-c8e4cecb8442" class="">HMI를 통해 다음 정보를 실시간으로 확인할 수 있다.</p></div><div style="display:contents" dir="auto"><ul id="3012a77e-92c7-8055-bc22-d691a9f370e2" class="bulleted-list"><li style="list-style-type:disc">서보 모터 현재 위치 및 속도</li></ul></div><div style="display:contents" dir="auto"><ul id="3012a77e-92c7-805b-b074-e166a87d77aa" class="bulleted-list"><li style="list-style-type:disc">서보 동작 상태</li></ul></div><div style="display:contents" dir="auto"><ul id="3012a77e-92c7-8005-8ea9-f0d88721785e" class="bulleted-list"><li style="list-style-type:disc">경고 번호 및 에러 번호</li></ul></div><div style="display:contents" dir="auto"><ul id="3012a77e-92c7-8013-9e23-d599eb44534a" class="bulleted-list"><li style="list-style-type:disc">금속 / 비금속 판별 상태</li></ul></div><div style="display:contents" dir="auto"><ul id="3012a77e-92c7-80c4-8108-c4c193b16bad" class="bulleted-list"><li style="list-style-type:disc">금속 수량 / 비금속 수량 / 전체 생산 수량</li></ul></div><div style="display:contents" dir="auto"><ul id="3012a77e-92c7-809b-8103-c9fd2a9553df" class="bulleted-list"><li style="list-style-type:disc">작업 상태 메시지</li></ul></div><div style="display:contents" dir="auto"><ul id="3012a77e-92c7-80c4-8233-f77914d85888" class="bulleted-list"><li style="list-style-type:disc">동작 완료 시간</li></ul></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-80ef-9f24-e99e9690acf0" class="">또한 HMI를 통해 가공 횟수 및 동작 시간 등 공정 설정 값 변경이 가능하다.</p></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-8081-bd47-cde2501adcc5" class="">본 설비는 자동 운전, 동작 점검, 수동 JOG 조작, 위치 티칭, 개별 적재 기능, 개별 및 전체 창고 비움 기능을 지원한다. HMI 램프 표시를 통해 창고 적재 상태, 설비 동작 가능 상태, 비상 상태, 창고 비움 상태 및 원점 확립 상태를 확인할 수 있다.</p></div><div style="display:contents" dir="auto"><hr id="3012a77e-92c7-800b-a97c-e8c5fe5550f0"/></div><div style="display:contents" dir="auto"><ol type="1" id="3012a77e-92c7-8001-818d-c0d4b41c23e7" class="numbered-list" start="2"><li>설비 운전 준비</li></ol></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-80c3-8637-f99a91c87a16" class="">설비 운전 전 다음 조건을 모두 확인해야 한다.</p></div><div style="display:contents" dir="auto"><ul id="3012a77e-92c7-80a4-b429-ce982e1a112b" class="bulleted-list"><li style="list-style-type:disc">비상정지 스위치 해제 상태</li></ul></div><div style="display:contents" dir="auto"><ul id="3012a77e-92c7-80ac-be84-cb65baddd42b" class="bulleted-list"><li style="list-style-type:disc">PLC READY 램프 점등 상태</li></ul></div><div style="display:contents" dir="auto"><ul id="3012a77e-92c7-80b8-8e11-fd83df380667" class="bulleted-list"><li style="list-style-type:disc">서보 모터 원점확립 완료 상태</li></ul></div><div style="display:contents" dir="auto"><ul id="3012a77e-92c7-8095-b1a6-d084275e9564" class="bulleted-list"><li style="list-style-type:disc">서보 모터 에러 및 경고 번호 0 상태</li></ul></div><div style="display:contents" dir="auto"><ul id="3012a77e-92c7-8049-84fe-c48070a64abf" class="bulleted-list"><li style="list-style-type:disc">설비 비상 동작 상태 아님</li></ul></div><div style="display:contents" dir="auto"><ul id="3012a77e-92c7-805d-aca4-eed4428924ae" class="bulleted-list"><li style="list-style-type:disc">동작 가능 램프 점등 상태</li></ul></div><div style="display:contents" dir="auto"><ul id="3012a77e-92c7-804f-9756-ea64d87a8d28" class="bulleted-list"><li style="list-style-type:disc">동작 점검 기능 수행 시 장비 정상 동작</li></ul></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-809d-bb6e-d236abf3f794" class="">위 조건을 만족할 경우 설비 운전이 가능하다.</p></div><div style="display:contents" dir="auto"><hr id="3012a77e-92c7-80dc-ae90-cfed112f2e29"/></div><div style="display:contents" dir="auto"><ol type="1" id="3012a77e-92c7-8075-b05b-f3339e6d3acc" class="numbered-list" start="3"><li>소재 투입</li></ol></div><div style="display:contents" dir="auto"><ul id="3012a77e-92c7-807c-ac52-f661cf90eaca" class="bulleted-list"><li style="list-style-type:disc">HMI 동작 화면에서 동작 버튼 실행</li></ul></div><div style="display:contents" dir="auto"><ul id="3012a77e-92c7-80ad-afbd-f91201001c3e" class="bulleted-list"><li style="list-style-type:disc">소재 미투입 대기 시간이 0이 되면 동작 완료</li></ul></div><div style="display:contents" dir="auto"><hr id="3012a77e-92c7-80ce-b14b-c58488329d6d"/></div><div style="display:contents" dir="auto"><ol type="1" id="3012a77e-92c7-80bf-91cf-e9e468011df8" class="numbered-list" start="4"><li>수동 조작 방법</li></ol></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-8057-8380-ecb3af9c7238" class="">4.1 JOG 운전</p></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-80dc-b4da-d37a5732d77d" class="">  서보 화면에서 JOG 버튼을 이용하여 위치 미세 조정 수행</p></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-8073-a604-e0506e0abdd6" class="">4.2 위치 티칭</p></div><div style="display:contents" dir="auto"><ul id="3012a77e-92c7-80b9-a12a-c7a000b5011e" class="bulleted-list"><li style="list-style-type:disc">JOG 운전으로 목표 위치 이동</li></ul></div><div style="display:contents" dir="auto"><ul id="3012a77e-92c7-80e7-90e7-cea136f49b28" class="bulleted-list"><li style="list-style-type:disc">티칭 버튼 입력 후 위치 저장</li></ul></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-8026-ae5a-c425ff937462" class="">4.3 적재 및 비움 기능</p></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-8097-8732-e2c1a78e5820" class="">개별 적재 : 원하는 층 선택 후 적재 수행</p></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-809c-903d-eaac2d74eccd" class="">개별 비움 : 원하는 층 선택 후 저장 박스로 소재 배출</p></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-805b-8341-cd148f367ec0" class="">창고 비움 : 전체 층 비움 동작 수행</p></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-80fd-addd-c93545761566" class="">비움 동작 중 비움 중 램프 점등</p></div><div style="display:contents" dir="auto"><hr id="3012a77e-92c7-80bd-a738-df9e08b9d90d"/></div><div style="display:contents" dir="auto"><ol type="1" id="3012a77e-92c7-8084-94dc-c1a0662bb976" class="numbered-list" start="5"><li>이상 발생 시 조치 방법</li></ol></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-80be-9fbc-e92e2e3d40d9" class="">비상 정지 발생 시</p></div><div style="display:contents" dir="auto"><ul id="3012a77e-92c7-8067-80cd-dab32eadc0d5" class="bulleted-list"><li style="list-style-type:disc"> 비상정지 해제 후 알람 상태 확인</li></ul></div><div style="display:contents" dir="auto"><ul id="3012a77e-92c7-8007-8fa4-e6957df26108" class="bulleted-list"><li style="list-style-type:disc"> 원점확립 수행 후 운전 재개</li></ul></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-8038-b1cf-ec0b9665712b" class="">서보 알람 발생 시</p></div><div style="display:contents" dir="auto"><ul id="3012a77e-92c7-8096-89a3-d275cdf21bf8" class="bulleted-list"><li style="list-style-type:disc">알람 코드 확인 및 원인 제거</li></ul></div><div style="display:contents" dir="auto"><ul id="3012a77e-92c7-8041-ac2b-e597e41072ba" class="bulleted-list"><li style="list-style-type:disc">서보 리셋 후 원점복귀 수행</li></ul></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-809a-b381-f7bb003f75b9" class="">설비 동작 불가 시</p></div><div style="display:contents" dir="auto"><ul id="3012a77e-92c7-80e7-9176-f1d8fdea0ed0" class="bulleted-list"><li style="list-style-type:disc">동작 가능 램프 및 인터락 조건 확인</li></ul></div><div style="display:contents" dir="auto"><ul id="3012a77e-92c7-808a-a612-c245097edeae" class="bulleted-list"><li style="list-style-type:disc">필요 시 설비 초기화 또는 원점복귀 수행</li></ul></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-806e-852b-d1121b784efd" class="">적재 및 배출 이상 발생 시</p></div><div style="display:contents" dir="auto"><ul id="3012a77e-92c7-8008-a839-dbc4a52d7d78" class="bulleted-list"><li style="list-style-type:disc">적재 상태 및 티칭 위치 확인</li></ul></div><div style="display:contents" dir="auto"><ul id="3012a77e-92c7-80e6-97f7-d8bb4e78083c" class="bulleted-list"><li style="list-style-type:disc">필요 시 JOG 운전으로 위치 보정</li></ul></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-80ab-a1cb-ffefcb4c65e3" class="">
+</p></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-8081-8384-ec77d715c6b0" class="">
+</p></div><div style="display:contents" dir="auto"><p id="3012a77e-92c7-803d-8d47-ff562e066733" class="">
+</p></div></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>
