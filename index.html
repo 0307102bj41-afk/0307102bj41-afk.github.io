@@ -538,16 +538,36 @@
   <text x="760" y="330" font-size="22" font-weight="700" fill="#0d0d0d" font-family="'Syne',sans-serif">Finisher</text>
 
   <!-- Joystick + LCD -->
-  <rect x="20" y="60" width="220" height="120" rx="14" fill="#fdf2f3" stroke="#e63946" stroke-width="2"/>
-  <text x="130" y="92" font-size="15" font-weight="700" fill="#0d0d0d" text-anchor="middle">Joystick + LCD</text>
-  <text x="130" y="124" font-size="11.5" fill="#4a4a4a" text-anchor="middle">HC-05 블루투스 페어링</text>
-  <text x="130" y="146" font-size="11.5" fill="#4a4a4a" text-anchor="middle">ADC 방향 매핑 (1~9)</text>
+  <rect x="20" y="55" width="220" height="135" rx="14" fill="#fdf2f3" stroke="#e63946" stroke-width="2"/>
+  <text x="130" y="80" font-size="15" font-weight="700" fill="#0d0d0d" text-anchor="middle">Joystick + LCD</text>
+  <!-- joystick icon -->
+  <g stroke="#0d0d0d" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="92" cy="100" r="7" fill="#0d0d0d" stroke="none"/>
+    <line x1="92" y1="107" x2="92" y2="122"/>
+    <rect x="78" y="122" width="28" height="10" rx="5" fill="#0d0d0d" stroke="none"/>
+  </g>
+  <!-- chip icon -->
+  <g stroke="#0d0d0d" stroke-width="2" fill="none" stroke-linecap="round">
+    <rect x="148" y="98" width="34" height="26" rx="3" fill="none"/>
+    <text x="165" y="116" font-size="9" font-weight="700" fill="#0d0d0d" text-anchor="middle" stroke="none">LCD</text>
+    <line x1="154" y1="98" x2="154" y2="92"/><line x1="162" y1="98" x2="162" y2="92"/><line x1="170" y1="98" x2="170" y2="92"/><line x1="178" y1="98" x2="178" y2="92"/>
+    <line x1="154" y1="124" x2="154" y2="130"/><line x1="162" y1="124" x2="162" y2="130"/><line x1="170" y1="124" x2="170" y2="130"/><line x1="178" y1="124" x2="178" y2="130"/>
+  </g>
+  <text x="130" y="152" font-size="11.5" fill="#4a4a4a" text-anchor="middle">HC-05 블루투스 페어링</text>
+  <text x="130" y="172" font-size="11.5" fill="#4a4a4a" text-anchor="middle">ADC 방향 매핑 (1~9)</text>
 
   <!-- Starter Module -->
-  <rect x="20" y="350" width="220" height="120" rx="14" fill="#fdf2f3" stroke="#e63946" stroke-width="2"/>
-  <text x="130" y="382" font-size="15" font-weight="700" fill="#0d0d0d" text-anchor="middle">Starter Module</text>
-  <text x="130" y="414" font-size="11.5" fill="#4a4a4a" text-anchor="middle">조도 센서 · EXTI 버튼</text>
-  <text x="130" y="436" font-size="11.5" fill="#4a4a4a" text-anchor="middle">카운트다운 · 부정 출발</text>
+  <rect x="20" y="345" width="220" height="135" rx="14" fill="#fdf2f3" stroke="#e63946" stroke-width="2"/>
+  <text x="130" y="370" font-size="15" font-weight="700" fill="#0d0d0d" text-anchor="middle">Starter Module</text>
+  <!-- sensor module icon (3 lights) -->
+  <g stroke="#0d0d0d" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="98" y="388" width="64" height="26" rx="13"/>
+    <circle cx="114" cy="401" r="6" fill="#0d0d0d" stroke="none"/>
+    <circle cx="130" cy="401" r="6" fill="#0d0d0d" stroke="none"/>
+    <circle cx="146" cy="401" r="6" fill="#0d0d0d" stroke="none"/>
+  </g>
+  <text x="130" y="442" font-size="11.5" fill="#4a4a4a" text-anchor="middle">조도 센서 · EXTI 버튼</text>
+  <text x="130" y="462" font-size="11.5" fill="#4a4a4a" text-anchor="middle">카운트다운 · 부정 출발</text>
 
   <!-- MCU center -->
   <rect x="350" y="60" width="280" height="410" rx="16" fill="#ffffff" stroke="#0d0d0d" stroke-width="2.5"/>
@@ -571,16 +591,30 @@
   <text x="368" y="418" font-size="11" fill="#4a4a4a">P1·P2 진입 시각 비교 → 승자 판정</text>
 
   <!-- RC car -->
-  <rect x="760" y="60" width="200" height="120" rx="14" fill="#fdf2f3" stroke="#e63946" stroke-width="2"/>
-  <text x="860" y="92" font-size="15" font-weight="700" fill="#0d0d0d" text-anchor="middle">RC car</text>
-  <text x="860" y="124" font-size="11.5" fill="#4a4a4a" text-anchor="middle">L298N 모터 드라이버</text>
-  <text x="860" y="146" font-size="11.5" fill="#4a4a4a" text-anchor="middle">좌우 DC 모터 · 3D프레임</text>
+  <rect x="760" y="55" width="200" height="135" rx="14" fill="#fdf2f3" stroke="#e63946" stroke-width="2"/>
+  <text x="860" y="80" font-size="15" font-weight="700" fill="#0d0d0d" text-anchor="middle">RC car</text>
+  <!-- car icon -->
+  <g stroke="#0d0d0d" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M824 118 Q824 110 832 110 L842 110 L850 100 Q852 98 856 98 L876 98 Q881 98 884 102 L890 110 L894 110 Q896 110 896 114 L896 118 Q896 120 894 120 L890 120"/>
+    <path d="M826 120 L834 120 M850 120 L870 120 M886 120 L890 120"/>
+    <circle cx="842" cy="120" r="7" fill="#fff"/>
+    <circle cx="842" cy="120" r="2.5" fill="#0d0d0d" stroke="none"/>
+    <circle cx="878" cy="120" r="7" fill="#fff"/>
+    <circle cx="878" cy="120" r="2.5" fill="#0d0d0d" stroke="none"/>
+  </g>
+  <text x="860" y="152" font-size="11.5" fill="#4a4a4a" text-anchor="middle">L298N 모터 드라이버</text>
+  <text x="860" y="172" font-size="11.5" fill="#4a4a4a" text-anchor="middle">좌우 DC 모터 · 3D프레임</text>
 
   <!-- Finisher -->
-  <rect x="760" y="350" width="200" height="120" rx="14" fill="#fdf2f3" stroke="#e63946" stroke-width="2"/>
-  <text x="860" y="382" font-size="15" font-weight="700" fill="#0d0d0d" text-anchor="middle">Finisher Module</text>
-  <text x="860" y="414" font-size="11.5" fill="#4a4a4a" text-anchor="middle">결과 출력 · 도트 매트릭스</text>
-  <text x="860" y="436" font-size="11.5" fill="#4a4a4a" text-anchor="middle">초음파 센서 · ms 단위</text>
+  <rect x="760" y="345" width="200" height="135" rx="14" fill="#fdf2f3" stroke="#e63946" stroke-width="2"/>
+  <text x="860" y="370" font-size="15" font-weight="700" fill="#0d0d0d" text-anchor="middle">Finisher Module</text>
+  <!-- flag icon -->
+  <g stroke="#0d0d0d" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="848" y1="388" x2="848" y2="418"/>
+    <path d="M848 389 L878 389 L871 397 L878 405 L848 405 Z" fill="#0d0d0d" stroke="none"/>
+  </g>
+  <text x="860" y="442" font-size="11.5" fill="#4a4a4a" text-anchor="middle">결과 출력 · 도트 매트릭스</text>
+  <text x="860" y="462" font-size="11.5" fill="#4a4a4a" text-anchor="middle">초음파 센서 · ms 단위</text>
 
   <!-- arrows controller<->mcu -->
   <line x1="240" y1="108" x2="344" y2="108" stroke="#e63946" stroke-width="2.2" marker-end="url(#rcarrow)"/>
